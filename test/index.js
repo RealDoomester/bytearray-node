@@ -3,64 +3,6 @@
 const it = require("tape")
 const ByteArray = require("../src/")
 
-it("Supports class aliases", (tape) => {
-  class Person {
-    constructor(name, age) {
-      this.name = name
-      this.age = age
-    }
-
-    get mikeAge() {
-      if (this.name === "Mike") {
-        return this.age
-      }
-    }
-  }
-
-  const ba = new ByteArray()
-
-  ba.registerClassAlias("com.person", Person)
-  ba.writeObject(new Person("Mike", 30))
-
-  ba.position = 0
-
-  const person = ba.readObject()
-
-  tape.equal(person instanceof Person, true)
-  tape.equal(person.mikeAge, 30)
-  tape.equal(person.name, "Mike")
-  tape.equal(person.age, 30)
-  tape.end()
-})
-
-it("Supports AMF0", (tape) => {
-  const ba = new ByteArray()
-
-  ba.writeObject({
-    id: 1,
-    username: "Test",
-    admin: true,
-    items: [1, 2, 3],
-    loginDate: new Date(),
-    extra: { valid: true }
-  })
-
-  ba.position = 0
-
-  const object = ba.readObject()
-
-  tape.equal(object.id, 1)
-  tape.equal(object.username, "Test")
-  tape.equal(object.admin, true)
-  tape.equal(object.items["0"], 1)
-  tape.equal(object.items["1"], 2)
-  tape.equal(object.items["2"], 3)
-  tape.equal(object.loginDate instanceof Date, true)
-  tape.equal(object.extra.valid, true)
-
-  tape.end()
-})
-
 it("Can write/read a byte", (tape) => {
   const ba = new ByteArray()
 

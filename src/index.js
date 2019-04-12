@@ -3,9 +3,7 @@
 const zlib = require("zlib")
 const iconv = require("iconv-lite")
 
-const AMF0 = require("./AMF0")
-
-class ByteArray {
+module.exports = class ByteArray {
   /**
    * Construct a new ByteArray
    * @constructor
@@ -28,16 +26,6 @@ class ByteArray {
      * @type {Boolean}
      */
     this.endian = true
-  }
-
-  /**
-   * Checks if the end of the file was encountered
-   * @param {Number} value
-   */
-  checkEOF(value) {
-    if (this.bytesAvailable < value) {
-      throw new RangeError("End of file was encountered")
-    }
   }
 
   /**
@@ -78,11 +66,7 @@ class ByteArray {
         this.buffer = this.buffer.slice(0, value)
         this.position = this.length
       } else {
-        if (this.position !== 0) {
-          this.expand(value - this.position)
-        } else {
-          this.expand(value)
-        }
+        this.expand(this.position !== 0 ? value - this.position : value)
       }
     }
   }
@@ -93,22 +77,6 @@ class ByteArray {
    */
   get bytesAvailable() {
     return this.length - this.position
-  }
-
-  /**
-   * Registers a class alias
-   * @param {String} aliasName
-   * @param {Function} classObject
-   */
-  registerClassAlias(aliasName, classObject) {
-    AMF0.registerClassAlias(aliasName.toString(), classObject)
-  }
-
-  /**
-   * Clears the reference array used in AMF0
-   */
-  clearReferences() {
-    AMF0.clearReferences()
   }
 
   /**
@@ -164,7 +132,6 @@ class ByteArray {
    * @returns {Number}
    */
   readByte() {
-    this.checkEOF(1)
     return this.buffer.readInt8(this.position++)
   }
 
@@ -201,7 +168,6 @@ class ByteArray {
    * @returns {Number}
    */
   readDouble() {
-    this.checkEOF(8)
     const value = this.endian ? this.buffer.readDoubleBE(this.position) : this.buffer.readDoubleLE(this.position)
     this.position += 8
     return value
@@ -212,7 +178,6 @@ class ByteArray {
    * @returns {Number}
    */
   readFloat() {
-    this.checkEOF(4)
     const value = this.endian ? this.buffer.readFloatBE(this.position) : this.buffer.readFloatLE(this.position)
     this.position += 4
     return value
@@ -223,7 +188,6 @@ class ByteArray {
    * @returns {Number}
    */
   readInt() {
-    this.checkEOF(4)
     const value = this.endian ? this.buffer.readInt32BE(this.position) : this.buffer.readInt32LE(this.position)
     this.position += 4
     return value
@@ -236,7 +200,6 @@ class ByteArray {
    * @returns {String}
    */
   readMultiByte(length, charSet = "utf8") {
-    this.checkEOF(length)
     const position = this.position
     this.position += length
 
@@ -248,20 +211,10 @@ class ByteArray {
   }
 
   /**
-   * Reads an object from the buffer, encoded in AMF serialized format
-   * @returns {*}
-   */
-  readObject() {
-    this.endian = true
-    return AMF0.deserializeData(this)
-  }
-
-  /**
    * Reads a signed short
    * @returns {Number}
    */
   readShort() {
-    this.checkEOF(2)
     const value = this.endian ? this.buffer.readInt16BE(this.position) : this.buffer.readInt16LE(this.position)
     this.position += 2
     return value
@@ -272,7 +225,6 @@ class ByteArray {
    * @returns {Number}
    */
   readUnsignedByte() {
-    this.checkEOF(1)
     return this.buffer.readUInt8(this.position++)
   }
 
@@ -281,7 +233,6 @@ class ByteArray {
    * @returns {Number}
    */
   readUnsignedInt() {
-    this.checkEOF(4)
     const value = this.endian ? this.buffer.readUInt32BE(this.position) : this.buffer.readUInt32LE(this.position)
     this.position += 4
     return value
@@ -292,7 +243,6 @@ class ByteArray {
    * @returns {Number}
    */
   readUnsignedShort() {
-    this.checkEOF(2)
     const value = this.endian ? this.buffer.readUInt16BE(this.position) : this.buffer.readUInt16LE(this.position)
     this.position += 2
     return value
@@ -339,11 +289,7 @@ class ByteArray {
     algorithm = algorithm.toLowerCase()
 
     if (algorithm === "zlib") {
-      if (this.compressionLevel < -1 || this.compressionLevel > 9) {
-        throw new Error(`Out of range compression level: ${this.compressionLevel}`)
-      }
-
-      this.buffer = zlib.inflateSync(this.buffer, { level: this.compressionLevel })
+      this.buffer = zlib.inflateSync(this.buffer, { level: 9 })
     } else if (algorithm === "deflate") {
       this.buffer = zlib.inflateRawSync(this.buffer)
     } else {
@@ -437,15 +383,6 @@ class ByteArray {
   }
 
   /**
-   * Writes an object into the buffer in AMF serialized format
-   * @param {*} value
-   */
-  writeObject(value) {
-    this.endian = true
-    AMF0.serializeData(this, value)
-  }
-
-  /**
    * Writes a signed short
    * @param {Number} value
    */
@@ -507,5 +444,3 @@ class ByteArray {
     this.writeMultiByte(value)
   }
 }
-
-module.exports = ByteArray

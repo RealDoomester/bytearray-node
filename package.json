@@ -1,7 +1,7 @@
 {
   "name": "bytearray-node",
-  "version": "2.2.3",
-  "description": "Pure Buffer implementation of the AS3 ByteArray supporting AMF0",
+  "version": "2.2.4",
+  "description": "Pure Buffer implementation of the AS3 ByteArray",
   "main": "src/index.js",
   "homepage": "https://github.com/Zaseth/bytearray-node",
   "directories": {
@@ -21,9 +21,7 @@
     "ByteArray",
     "Actionscript",
     "Buffer",
-    "Binary",
-    "AMF0",
-    "AMF"
+    "Binary"
   ],
   "dependencies": {
     "iconv-lite": "^0.4.24"
