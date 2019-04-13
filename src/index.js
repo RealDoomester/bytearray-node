@@ -3,7 +3,7 @@
 const zlib = require("zlib")
 const iconv = require("iconv-lite")
 
-module.exports = class ByteArray {
+class ByteArray {
   /**
    * Construct a new ByteArray
    * @constructor
@@ -26,24 +26,11 @@ module.exports = class ByteArray {
      * @type {Boolean}
      */
     this.endian = true
-  }
-
-  /**
-   * Expands the buffer when needed
-   * @param {Number} value
-   */
-  expand(value) {
-    if (this.bytesAvailable >= value) {
-      return
-    }
-
-    const toExpand = Math.abs(this.bytesAvailable - value)
-
-    if (this.bytesAvailable + toExpand === value) {
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(toExpand)])
-    } else {
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(value)])
-    }
+    /**
+     * The AMF0 class
+     * @type {AMF0}
+     */
+    this.AMF0 = new (require("./AMF0"))(this)
   }
 
   /**
@@ -77,6 +64,41 @@ module.exports = class ByteArray {
    */
   get bytesAvailable() {
     return this.length - this.position
+  }
+
+  /**
+   * Expands the buffer when needed
+   * @param {Number} value
+   */
+  expand(value) {
+    if (this.bytesAvailable >= value) {
+      return
+    }
+
+    const toExpand = Math.abs(this.bytesAvailable - value)
+
+    if (this.bytesAvailable + toExpand === value) {
+      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(toExpand)])
+    } else {
+      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(value)])
+    }
+  }
+
+  /**
+   * Registers a class alias
+   * @param {String} aliasName
+   * @param {Class} classObject
+   */
+  registerClassAlias(aliasName, classObject) {
+    if (aliasName.length === 0) {
+      throw new Error("Parameter aliasName must be non-empty string")
+    }
+
+    if (typeof classObject !== "function") {
+      throw new Error("Parameter classObject must be a function")
+    }
+
+    this.AMF0.registerClassAlias(aliasName.toString(), classObject)
   }
 
   /**
@@ -208,6 +230,14 @@ module.exports = class ByteArray {
     } else {
       throw new Error(`Invalid character set: ${charSet}`)
     }
+  }
+
+  /**
+   * Reads an object
+   * @returns {?}
+   */
+  readObject() {
+    return this.AMF0.deserializeValue()
   }
 
   /**
@@ -383,6 +413,15 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Writes an object
+   * @param {?} value
+   */
+  writeObject(value) {
+    this.endian = true
+    this.AMF0.serializeValue(value)
+  }
+
+  /**
    * Writes a signed short
    * @param {Number} value
    */
@@ -444,3 +483,5 @@ module.exports = class ByteArray {
     this.writeMultiByte(value)
   }
 }
+
+module.exports = ByteArray
