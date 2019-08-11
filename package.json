@@ -27,7 +27,7 @@
     "iconv-lite": "^0.4.24"
   },
   "devDependencies": {
-    "tape": "^4.10.1"
+    "tape": "^4.11.0"
   },
   "author": "Zaseth",
   "license": "MIT"
