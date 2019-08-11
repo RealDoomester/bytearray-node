@@ -94,14 +94,10 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   compress(algorithm) {
-    algorithm = algorithm.toLowerCase()
-
-    if (algorithm === "zlib") {
-      this.buffer = deflateSync(this.buffer, { level: 9 })
-    } else if (algorithm === "deflate") {
-      this.buffer = deflateRawSync(this.buffer)
-    } else {
-      throw new Error(`Invalid compression algorithm: ${algorithm}`)
+    switch (algorithm.toLowerCase()) {
+      case 'zlib': this.buffer = deflateSync(this.buffer, { level: 9 }); break
+      case 'deflate': this.buffer = deflateRawSync(this.buffer); break
+      default: throw new Error(`Invalid compression algorithm: ${algorithm}`)
     }
 
     this.position = this.length
@@ -288,14 +284,10 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   uncompress(algorithm) {
-    algorithm = algorithm.toLowerCase()
-
-    if (algorithm === "zlib") {
-      this.buffer = inflateSync(this.buffer, { level: 9 })
-    } else if (algorithm === "deflate") {
-      this.buffer = inflateRawSync(this.buffer)
-    } else {
-      throw new Error(`Invalid compression algorithm: ${algorithm}`)
+    switch (algorithm.toLowerCase()) {
+      case 'zlib': this.buffer = inflateSync(this.buffer, { level: 9 }); break
+      case 'deflate': this.buffer = inflateRawSync(this.buffer); break
+      default: throw new Error(`Invalid compression algorithm: ${algorithm}`)
     }
 
     this.position = 0
