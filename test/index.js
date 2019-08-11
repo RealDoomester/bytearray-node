@@ -1,9 +1,9 @@
-"use strict"
+'use strict'
 
-const it = require("tape")
-const ByteArray = require("../src/")
+const it = require('tape')
+const ByteArray = require('../src/')
 
-it("Can write/read a byte", (tape) => {
+it('Can write/read a byte', (tape) => {
   const ba = new ByteArray()
 
   ba.writeByte(1)
@@ -17,7 +17,7 @@ it("Can write/read a byte", (tape) => {
   tape.end()
 })
 
-it("Can write/read a boolean", (tape) => {
+it('Can write/read a boolean', (tape) => {
   const ba = new ByteArray()
 
   ba.writeBoolean(true)
@@ -31,7 +31,7 @@ it("Can write/read a boolean", (tape) => {
   tape.end()
 })
 
-it("Can write/read bytes", (tape) => {
+it('Can write/read bytes', (tape) => {
   const ba = new ByteArray()
 
   ba.writeByte(1)
@@ -66,7 +66,7 @@ it("Can write/read bytes", (tape) => {
   tape.end()
 })
 
-it("Can write/read a short", (tape) => {
+it('Can write/read a short', (tape) => {
   const ba = new ByteArray()
 
   ba.writeShort(1)
@@ -80,7 +80,7 @@ it("Can write/read a short", (tape) => {
   tape.end()
 })
 
-it("Can write/read an int", (tape) => {
+it('Can write/read an int', (tape) => {
   const ba = new ByteArray()
 
   ba.writeInt(1)
@@ -94,7 +94,7 @@ it("Can write/read an int", (tape) => {
   tape.end()
 })
 
-it("Can write/read a float/double", (tape) => {
+it('Can write/read a float/double', (tape) => {
   const ba = new ByteArray()
 
   ba.writeFloat(1.123)
@@ -108,44 +108,44 @@ it("Can write/read a float/double", (tape) => {
   tape.end()
 })
 
-it("Can write/read a string", (tape) => {
+it('Can write/read a string', (tape) => {
   const ba = new ByteArray()
 
-  ba.writeUTF("Hello World!")
-  ba.writeUTFBytes("Hello")
-  ba.writeMultiByte("Foo", "ascii")
+  ba.writeUTF('Hello World!')
+  ba.writeUTFBytes('Hello')
+  ba.writeMultiByte('Foo', 'ascii')
 
   ba.position = 0
 
-  tape.equal(ba.readUTF(), "Hello World!")
-  tape.equal(ba.readUTFBytes(5), "Hello")
-  tape.equal(ba.readMultiByte(3, "ascii"), "Foo")
+  tape.equal(ba.readUTF(), 'Hello World!')
+  tape.equal(ba.readUTFBytes(5), 'Hello')
+  tape.equal(ba.readMultiByte(3, 'ascii'), 'Foo')
   tape.equal(ba.position, 22)
 
   ba.clear()
 
-  ba.writeMultiByte("Hello", "win1251")
+  ba.writeMultiByte('Hello', 'win1251')
 
   ba.position = 0
 
-  tape.equal(ba.readMultiByte(5, "win1251"), "Hello")
+  tape.equal(ba.readMultiByte(5, 'win1251'), 'Hello')
   tape.end()
 })
 
-it("Can compress/uncompress the buffer", (tape) => {
+it('Can compress/uncompress the buffer', (tape) => {
   const ba = new ByteArray()
 
-  ba.writeUTF("Hello World!")
+  ba.writeUTF('Hello World!')
   ba.writeByte(1)
   ba.writeByte(2)
   tape.equal(ba.position, 16)
 
-  ba.deflate()
+  ba.compress('deflate')
   tape.equal(ba.position, 18)
 
-  ba.inflate()
+  ba.uncompress('deflate')
   tape.equal(ba.position, 0)
-  tape.equal(ba.readUTF(), "Hello World!")
+  tape.equal(ba.readUTF(), 'Hello World!')
   tape.equal(ba.readByte(), 1)
   tape.equal(ba.readByte(), 2)
   tape.equal(ba.position, 16)
@@ -153,22 +153,22 @@ it("Can compress/uncompress the buffer", (tape) => {
   ba.clear()
   tape.equal(ba.position, 0)
 
-  ba.writeUTF("Hello World!")
+  ba.writeUTF('Hello World!')
   tape.equal(ba.position, 14)
 
-  ba.compress("zlib")
+  ba.compress('zlib')
   tape.equal(ba.position, 22)
   tape.equal(ba.buffer[0], 120)
   tape.equal(ba.buffer[1], 218)
 
-  ba.uncompress("zlib")
+  ba.uncompress('zlib')
   tape.equal(ba.position, 0)
-  tape.equal(ba.readUTF(), "Hello World!")
+  tape.equal(ba.readUTF(), 'Hello World!')
   tape.equal(ba.position, 14)
   tape.end()
 })
 
-it("Supports BE/LE", (tape) => {
+it('Supports BE/LE', (tape) => {
   const ba = new ByteArray()
 
   ba.endian = false // LE
@@ -188,14 +188,14 @@ it("Supports BE/LE", (tape) => {
   tape.end()
 })
 
-it("Supports bytesAvailable", (tape) => {
+it('Supports bytesAvailable', (tape) => {
   const ba = new ByteArray()
 
-  ba.writeUTFBytes("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus etc.")
+  ba.writeUTFBytes('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus etc.')
 
   ba.position = 0
 
-  while (ba.bytesAvailable > 0 && ba.readUTFBytes(1) !== "a") { }
+  while (ba.bytesAvailable > 0 && ba.readUTFBytes(1) !== 'a') { }
 
   if (ba.position < ba.bytesAvailable) {
     tape.equal(ba.position, 23)
@@ -205,7 +205,7 @@ it("Supports bytesAvailable", (tape) => {
   tape.end()
 })
 
-it("Supports starting buffers in the constructor", (tape) => {
+it('Supports starting buffers in the constructor', (tape) => {
   const ba = new ByteArray([1, 2, 3])
 
   tape.equal(ba.readByte(), 1)
@@ -228,18 +228,18 @@ it("Supports starting buffers in the constructor", (tape) => {
   tape.end()
 })
 
-it("Supports a while loop using bytesAvailable", (tape) => {
+it('Supports a while loop using bytesAvailable', (tape) => {
   const buffer = Buffer.alloc(6)
 
   buffer.writeInt8(69, 0)
-  buffer.writeInt8("F".charCodeAt(), 1)
+  buffer.writeInt8('F'.charCodeAt(), 1)
   buffer.writeInt8(69, 2)
-  buffer.writeInt8("O".charCodeAt(), 3)
+  buffer.writeInt8('O'.charCodeAt(), 3)
   buffer.writeInt8(69, 4)
-  buffer.writeInt8("O".charCodeAt(), 5)
+  buffer.writeInt8('O'.charCodeAt(), 5)
 
   const ba = new ByteArray(buffer)
-  let str = ""
+  let str = ''
 
   while (ba.bytesAvailable > 0) {
     if (ba.readByte() === 69) {
@@ -247,12 +247,12 @@ it("Supports a while loop using bytesAvailable", (tape) => {
     }
   }
 
-  tape.equal(str, "FOO")
+  tape.equal(str, 'FOO')
   tape.equal(ba.position, 6)
   tape.end()
 })
 
-it("Supports the length property", (tape) => {
+it('Supports the length property', (tape) => {
   const ba = new ByteArray()
 
   ba.length = 3
@@ -268,11 +268,11 @@ it("Supports the length property", (tape) => {
   tape.equal(ba.length, 0)
 
   ba.length = 1
-  ba.writeUTF("Hello")
+  ba.writeUTF('Hello')
   tape.equal(ba.length, 7)
 
   ba.position = 0
-  tape.equal(ba.readUTF(), "Hello")
+  tape.equal(ba.readUTF(), 'Hello')
   tape.equal(ba.position, 7)
 
   ba.clear()
@@ -282,35 +282,35 @@ it("Supports the length property", (tape) => {
   tape.equal(ba.buffer[0], 1)
   tape.equal(ba.buffer[2], 2)
   tape.equal(ba.length, 3)
-  ba.writeUTF("Hello")
+  ba.writeUTF('Hello')
 
   ba.position = 0
   tape.equal(ba.readByte(), 1)
   tape.equal(ba.readShort(), 2)
-  tape.equal(ba.readUTF(), "Hello")
+  tape.equal(ba.readUTF(), 'Hello')
 
   ba.clear()
   ba.length = 1
   ba.writeInt(5)
-  ba.writeUTFBytes("Hello")
+  ba.writeUTFBytes('Hello')
   ba.position = 0
   tape.equal(ba.readInt(), 5)
-  tape.equal(ba.readUTFBytes(5), "Hello")
+  tape.equal(ba.readUTFBytes(5), 'Hello')
 
   ba.clear()
   ba.length = 2
   ba.writeInt(5)
-  ba.writeUTFBytes("Hello")
+  ba.writeUTFBytes('Hello')
   ba.position = 0
   tape.equal(ba.readInt(), 5)
-  tape.equal(ba.readUTFBytes(5), "Hello")
+  tape.equal(ba.readUTFBytes(5), 'Hello')
 
   ba.clear()
   ba.length = 1
   ba.writeDouble(5)
-  ba.writeUTFBytes("Hello")
+  ba.writeUTFBytes('Hello')
   ba.position = 0
   tape.equal(ba.readDouble(), 5)
-  tape.equal(ba.readUTFBytes(5), "Hello")
+  tape.equal(ba.readUTFBytes(5), 'Hello')
   tape.end()
 })

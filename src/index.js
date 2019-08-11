@@ -39,6 +39,14 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Returns the endianness but then as a string
+   * @returns {String}
+   */
+  get endianStr() {
+    return this.endian ? 'BE' : 'LE'
+  }
+
+  /**
    * Sets the length of the buffer
    * @param {Number} value
    */
@@ -68,21 +76,16 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   expand(value) {
-    if (this.bytesAvailable >= value) {
-      return
-    }
+    if (this.bytesAvailable < value) {
+      const toExpand = Math.abs(this.bytesAvailable - value)
+      const needsExpand = this.bytesAvailable + toExpand === value
 
-    const toExpand = Math.abs(this.bytesAvailable - value)
-
-    if (this.bytesAvailable + toExpand === value) {
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(toExpand)])
-    } else {
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(value)])
+      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(needsExpand ? toExpand : value)])
     }
   }
 
   /**
-   * Clears the buffer and resets the length and position to 0
+   * Clears the buffer and sets the position to 0
    */
   clear() {
     this.buffer = Buffer.alloc(0)
@@ -101,20 +104,6 @@ module.exports = class ByteArray {
     }
 
     this.position = this.length
-  }
-
-  /**
-   * Compresses the buffer using deflate
-   */
-  deflate() {
-    this.compress('deflate')
-  }
-
-  /**
-   * Decompresses the buffer using deflate
-   */
-  inflate() {
-    this.uncompress('deflate')
   }
 
   /**
@@ -142,17 +131,9 @@ module.exports = class ByteArray {
   readBytes(bytes, offset = 0, length = 0) {
     const available = this.bytesAvailable
 
-    if (length === 0) {
-      length = available
-    }
-
-    if (length > available) {
-      throw new RangeError('End of file was encountered')
-    }
-
-    if (bytes.length < offset + length) {
-      bytes.expand(offset + length - bytes.position)
-    }
+    if (length === 0) length = available
+    if (length > available) throw new RangeError('End of buffer was encountered')
+    if (bytes.length < offset + length) bytes.expand(offset + length - bytes.position)
 
     for (let i = 0; i < length; i++) {
       bytes.buffer[i + offset] = this.buffer[i + this.position]
@@ -166,7 +147,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readDouble() {
-    const value = this.endian ? this.buffer.readDoubleBE(this.position) : this.buffer.readDoubleLE(this.position)
+    const value = this.buffer[`readDouble${this.endianStr}`](this.position)
     this.position += 8
     return value
   }
@@ -176,7 +157,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readFloat() {
-    const value = this.endian ? this.buffer.readFloatBE(this.position) : this.buffer.readFloatLE(this.position)
+    const value = this.buffer[`readFloat${this.endianStr}`](this.position)
     this.position += 4
     return value
   }
@@ -186,25 +167,25 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readInt() {
-    const value = this.endian ? this.buffer.readInt32BE(this.position) : this.buffer.readInt32LE(this.position)
+    const value = this.buffer[`readInt32${this.endianStr}`](this.position)
     this.position += 4
     return value
   }
 
   /**
    * Reads a multibyte string
-   * @param {Length} length
-   * @param {String} charSet
+   * @param {Number} length
+   * @param {String} charset
    * @returns {String}
    */
-  readMultiByte(length, charSet = 'utf8') {
+  readMultiByte(length, charset = 'utf8') {
     const position = this.position
     this.position += length
 
-    if (encodingExists(charSet)) {
-      return decode(this.buffer.slice(position, position + length), charSet)
+    if (encodingExists(charset)) {
+      return decode(this.buffer.slice(position, position + length), charset)
     } else {
-      throw new Error(`Invalid character set: ${charSet}`)
+      throw new Error(`Invalid character set: ${charset}`)
     }
   }
 
@@ -213,7 +194,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readShort() {
-    const value = this.endian ? this.buffer.readInt16BE(this.position) : this.buffer.readInt16LE(this.position)
+    const value = this.buffer[`readInt16${this.endianStr}`](this.position)
     this.position += 2
     return value
   }
@@ -231,7 +212,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedInt() {
-    const value = this.endian ? this.buffer.readUInt32BE(this.position) : this.buffer.readUInt32LE(this.position)
+    const value = this.buffer[`readUInt32${this.endianStr}`](this.position)
     this.position += 4
     return value
   }
@@ -241,7 +222,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedShort() {
-    const value = this.endian ? this.buffer.readUInt16BE(this.position) : this.buffer.readUInt16LE(this.position)
+    const value = this.buffer[`readUInt16${this.endianStr}`](this.position)
     this.position += 2
     return value
   }
@@ -265,7 +246,7 @@ module.exports = class ByteArray {
 
   /**
    * Converts the buffer to JSON
-   * @returns {JSON}
+   * @returns {Object}
    */
   toJSON() {
     return this.buffer.toJSON()
@@ -317,9 +298,7 @@ module.exports = class ByteArray {
    * @param {Number} length
    */
   writeBytes(bytes, offset = 0, length = 0) {
-    if (length === 0) {
-      length = bytes.length - offset
-    }
+    if (length === 0) length = bytes.length - offset
 
     this.expand(this.position + length - this.position)
 
@@ -336,7 +315,7 @@ module.exports = class ByteArray {
   */
   writeDouble(value) {
     this.expand(8)
-    this.endian ? this.buffer.writeDoubleBE(value, this.position) : this.buffer.writeDoubleLE(value, this.position)
+    this.buffer[`writeDouble${this.endianStr}`](value, this.position)
     this.position += 8
   }
 
@@ -346,7 +325,7 @@ module.exports = class ByteArray {
    */
   writeFloat(value) {
     this.expand(4)
-    this.endian ? this.buffer.writeFloatBE(value, this.position) : this.buffer.writeFloatLE(value, this.position)
+    this.buffer[`writeFloat${this.endianStr}`](value, this.position)
     this.position += 4
   }
 
@@ -356,23 +335,23 @@ module.exports = class ByteArray {
    */
   writeInt(value) {
     this.expand(4)
-    this.endian ? this.buffer.writeInt32BE(value, this.position) : this.buffer.writeInt32LE(value, this.position)
+    this.buffer[`writeInt32${this.endianStr}`](value, this.position)
     this.position += 4
   }
 
   /**
    * Writes a multibyte string
    * @param {String} value
-   * @param {String} charSet
+   * @param {String} charset
    */
-  writeMultiByte(value, charSet = 'utf8') {
+  writeMultiByte(value, charset = 'utf8') {
     const length = Buffer.byteLength(value)
 
-    if (encodingExists(charSet)) {
-      this.buffer = Buffer.concat([this.buffer, encode(value, charSet)])
+    if (encodingExists(charset)) {
+      this.buffer = Buffer.concat([this.buffer, encode(value, charset)])
       this.position += length
     } else {
-      throw new Error(`Invalid character set: ${charSet}`)
+      throw new Error(`Invalid character set: ${charset}`)
     }
   }
 
@@ -382,7 +361,7 @@ module.exports = class ByteArray {
    */
   writeShort(value) {
     this.expand(2)
-    this.endian ? this.buffer.writeInt16BE(value, this.position) : this.buffer.writeInt16LE(value, this.position)
+    this.buffer[`writeInt16${this.endianStr}`](value, this.position)
     this.position += 2
   }
 
@@ -401,7 +380,7 @@ module.exports = class ByteArray {
    */
   writeUnsignedInt(value) {
     this.expand(4)
-    this.endian ? this.buffer.writeUInt32BE(value, this.position) : this.buffer.writeUInt32LE(value, this.position)
+    this.buffer[`writeUInt32${this.endianStr}`](value, this.position)
     this.position += 4
   }
 
@@ -411,7 +390,7 @@ module.exports = class ByteArray {
    */
   writeUnsignedShort(value) {
     this.expand(2)
-    this.endian ? this.buffer.writeUInt16BE(value, this.position) : this.buffer.writeUInt16LE(value, this.position)
+    this.buffer[`writeUInt16${this.endianStr}`](value, this.position)
     this.position += 2
   }
 
@@ -422,9 +401,7 @@ module.exports = class ByteArray {
   writeUTF(value) {
     const length = Buffer.byteLength(value)
 
-    if (length > 65535) {
-      throw new RangeError('The length can not be greater than 65535')
-    }
+    if (length > 65535) throw new RangeError('Out of range for writeUTF length')
 
     this.writeUnsignedShort(length)
     this.writeMultiByte(value)

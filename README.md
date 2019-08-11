@@ -9,7 +9,7 @@ A Node.js implementation of the Actionscript 3 ByteArray. I made this library so
 # Usage
 
 ```javascript
-const ByteArray = require("bytearray-node")
+const ByteArray = require('bytearray-node')
 const ba = new ByteArray()
 
 ba.writeByte(1)
