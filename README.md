@@ -1,5 +1,7 @@
 # ByteArray-node
 
+[![npm version](https://img.shields.io/npm/v/bytearray-node?style=flat-square)](https://www.npmjs.com/package/bytearray-node)
+
 A Node.js implementation of the Actionscript 3 ByteArray. I made this library so that Actionscript developers using ByteArray in their application are more likely to switch to Node.js. This library is exactly the same as the one in Actionscript, so it's very easy!
 
 # Installation
