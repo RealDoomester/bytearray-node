@@ -107,14 +107,14 @@ module.exports = class ByteArray {
    * Compresses the buffer using deflate
    */
   deflate() {
-    this.compress("deflate")
+    this.compress('deflate')
   }
 
   /**
    * Decompresses the buffer using deflate
    */
   inflate() {
-    this.uncompress("deflate")
+    this.uncompress('deflate')
   }
 
   /**
@@ -147,7 +147,7 @@ module.exports = class ByteArray {
     }
 
     if (length > available) {
-      throw new RangeError("End of file was encountered")
+      throw new RangeError('End of file was encountered')
     }
 
     if (bytes.length < offset + length) {
@@ -197,7 +197,7 @@ module.exports = class ByteArray {
    * @param {String} charSet
    * @returns {String}
    */
-  readMultiByte(length, charSet = "utf8") {
+  readMultiByte(length, charSet = 'utf8') {
     const position = this.position
     this.position += length
 
@@ -276,7 +276,7 @@ module.exports = class ByteArray {
    * @returns {String}
    */
   toString() {
-    return this.buffer.toString("utf8")
+    return this.buffer.toString('utf8')
   }
 
   /**
@@ -365,7 +365,7 @@ module.exports = class ByteArray {
    * @param {String} value
    * @param {String} charSet
    */
-  writeMultiByte(value, charSet = "utf8") {
+  writeMultiByte(value, charSet = 'utf8') {
     const length = Buffer.byteLength(value)
 
     if (encodingExists(charSet)) {
@@ -423,7 +423,7 @@ module.exports = class ByteArray {
     const length = Buffer.byteLength(value)
 
     if (length > 65535) {
-      throw new RangeError("Length can't be greater than 65535")
+      throw new RangeError('The length can not be greater than 65535')
     }
 
     this.writeUnsignedShort(length)
