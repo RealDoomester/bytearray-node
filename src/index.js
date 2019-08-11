@@ -1,13 +1,15 @@
-"use strict"
+'use strict'
 
-const zlib = require("zlib")
-const iconv = require("iconv-lite")
+const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
+const { encodingExists, decode, encode } = require('iconv-lite')
 
+/**
+ * @exports
+ * @class
+ */
 module.exports = class ByteArray {
   /**
-   * Construct a new ByteArray
    * @constructor
-   * @class
    * @param {Buffer|Array} buffer
    */
   constructor(buffer) {
@@ -95,9 +97,9 @@ module.exports = class ByteArray {
     algorithm = algorithm.toLowerCase()
 
     if (algorithm === "zlib") {
-      this.buffer = zlib.deflateSync(this.buffer, { level: 9 })
+      this.buffer = deflateSync(this.buffer, { level: 9 })
     } else if (algorithm === "deflate") {
-      this.buffer = zlib.deflateRawSync(this.buffer)
+      this.buffer = deflateRawSync(this.buffer)
     } else {
       throw new Error(`Invalid compression algorithm: ${algorithm}`)
     }
@@ -203,8 +205,8 @@ module.exports = class ByteArray {
     const position = this.position
     this.position += length
 
-    if (iconv.encodingExists(charSet)) {
-      return iconv.decode(this.buffer.slice(position, position + length), charSet)
+    if (encodingExists(charSet)) {
+      return decode(this.buffer.slice(position, position + length), charSet)
     } else {
       throw new Error(`Invalid character set: ${charSet}`)
     }
@@ -289,9 +291,9 @@ module.exports = class ByteArray {
     algorithm = algorithm.toLowerCase()
 
     if (algorithm === "zlib") {
-      this.buffer = zlib.inflateSync(this.buffer, { level: 9 })
+      this.buffer = inflateSync(this.buffer, { level: 9 })
     } else if (algorithm === "deflate") {
-      this.buffer = zlib.inflateRawSync(this.buffer)
+      this.buffer = inflateRawSync(this.buffer)
     } else {
       throw new Error(`Invalid compression algorithm: ${algorithm}`)
     }
@@ -374,8 +376,8 @@ module.exports = class ByteArray {
   writeMultiByte(value, charSet = "utf8") {
     const length = Buffer.byteLength(value)
 
-    if (iconv.encodingExists(charSet)) {
-      this.buffer = Buffer.concat([this.buffer, iconv.encode(value, charSet)])
+    if (encodingExists(charSet)) {
+      this.buffer = Buffer.concat([this.buffer, encode(value, charSet)])
       this.position += length
     } else {
       throw new Error(`Invalid character set: ${charSet}`)
