@@ -77,7 +77,7 @@ module.exports = class ByteArray {
    */
   expand(value) {
     if (this.bytesAvailable < value) {
-      const toExpand = Math.abs(this.bytesAvailable - value)
+      const toExpand = value - this.bytesAvailable
       const needsExpand = this.bytesAvailable + toExpand === value
 
       this.buffer = Buffer.concat([this.buffer, Buffer.alloc(needsExpand ? toExpand : value)])
