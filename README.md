@@ -18,4 +18,5 @@ ba.writeShort(5)
 ba.position = 0
 
 console.log(ba.readByte()) // 1
+console.log(ba.readShort()) // 5
 ```

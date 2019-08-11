@@ -1,6 +1,6 @@
 {
   "name": "bytearray-node",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray",
   "main": "src/index.js",
   "homepage": "https://github.com/Zaseth/bytearray-node",
