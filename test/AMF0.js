@@ -150,9 +150,10 @@ it('Can write/read AMF0 typed objects', (tape) => {
 
   const refObj = { id: 1 }
 
+  ByteArray.registerClassAlias('com.person', Person)
+
   const ba = new ByteArray()
   ba.objectEncoding = 0
-  ba.registerClassAlias('com.person', Person)
 
   const obj1 = new Person('Daan', 17, refObj)
   const obj2 = new Person('Gravix', 15, refObj)

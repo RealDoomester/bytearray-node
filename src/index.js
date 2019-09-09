@@ -12,6 +12,12 @@ const AMF3 = require('./AMF/AMF3')
  */
 module.exports = class ByteArray {
   /**
+   * Used to preserve class objects
+   * @type {Object}
+   */
+  static classMapping = {}
+
+  /**
    * @constructor
    * @param {Buffer|Array} buffer
    */
@@ -36,16 +42,6 @@ module.exports = class ByteArray {
      * @type {Number}
      */
     this.objectEncoding = 3
-    /**
-     * Used to preserve class object by alias name
-     * @type {Object}
-     */
-    this.classMapping = {}
-    /**
-     * Used to preserve alias name by class object
-     * @type {Array}
-     */
-    this.aliasMapping = {}
   }
 
   /**
@@ -90,16 +86,23 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Returns the class mapping
+   * @returns {Object}
+   */
+  get classMapping() {
+    return ByteArray.classMapping
+  }
+
+  /**
    * Preserves the class (type) of an object when the object is encoded in Action Message Format (AMF).
    * @param {String} aliasName
    * @param {Object} classObject
    */
-  registerClassAlias(aliasName, classObject) {
+  static registerClassAlias(aliasName, classObject) {
     if (!aliasName) throw new Error('Missing alias name')
     if (!classObject) throw new Error('Missing class object')
 
-    this.classMapping[aliasName] = classObject
-    this.aliasMapping[classObject] = aliasName
+    this.classMapping[classObject] = aliasName
   }
 
   /**

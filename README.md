@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/bytearray-node?style=flat-square)](https://www.npmjs.com/package/bytearray-node)
 
-A Node.js implementation of the Actionscript 3 ByteArray. I made this library so that Actionscript developers using ByteArray in their application are more likely to switch to Node.js. This library is exactly the same as the one in Actionscript, so it's very easy!
+A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 # Installation
 
@@ -22,7 +22,3 @@ ba.position = 0
 console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
 ```
-
-# AMF
-
-AMF0 is supported and AMF3 will be worked on.

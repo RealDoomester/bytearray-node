@@ -255,7 +255,7 @@ module.exports = class AMF0 {
     }
 
     this.byteArr.writeByte(Markers.TYPED_OBJECT)
-    this.byteArr.writeUTF(this.byteArr.aliasMapping[value.constructor]) // Write registered alias name
+    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor]) // Write registered alias name
 
     for (const key in value) {
       this.writeString(key, false)
@@ -310,7 +310,7 @@ module.exports = class AMF0 {
         this.writeECMAArray(value)
       } else if (type === Date) {
         this.writeDate(value)
-      } else if (this.byteArr.aliasMapping[type]) {
+      } else if (this.byteArr.classMapping[type]) {
         this.writeTypedObject(value)
       } else {
         throw new Error(`Unknown value type: ${type}`)
