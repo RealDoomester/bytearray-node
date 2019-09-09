@@ -3,6 +3,9 @@
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
+const AMF0 = require('./AMF/AMF0')
+const AMF3 = require('./AMF/AMF3')
+
 /**
  * @exports
  * @class
@@ -28,6 +31,21 @@ module.exports = class ByteArray {
      * @type {Boolean}
      */
     this.endian = true
+    /**
+     * The AMF object encoding
+     * @type {Number}
+     */
+    this.objectEncoding = 3
+    /**
+     * Used to preserve class object by alias name
+     * @type {Object}
+     */
+    this.classMapping = {}
+    /**
+     * Used to preserve alias name by class object
+     * @type {Array}
+     */
+    this.aliasMapping = {}
   }
 
   /**
@@ -69,6 +87,19 @@ module.exports = class ByteArray {
    */
   get bytesAvailable() {
     return this.length - this.position
+  }
+
+  /**
+   * Preserves the class (type) of an object when the object is encoded in Action Message Format (AMF).
+   * @param {String} aliasName
+   * @param {Object} classObject
+   */
+  registerClassAlias(aliasName, classObject) {
+    if (!aliasName) throw new Error('Missing alias name')
+    if (!classObject) throw new Error('Missing class object')
+
+    this.classMapping[aliasName] = classObject
+    this.aliasMapping[classObject] = aliasName
   }
 
   /**
@@ -186,6 +217,18 @@ module.exports = class ByteArray {
       return decode(this.buffer.slice(position, position + length), charset)
     } else {
       throw new Error(`Invalid character set: ${charset}`)
+    }
+  }
+
+  /**
+   * Reads an object
+   * @returns {*}
+   */
+  readObject() {
+    switch (this.objectEncoding) {
+      case 0: return new AMF0(this).read()
+      case 3: return new AMF3(this).read()
+      default: throw new Error(`Unknown object encoding: ${this.objectEncoding}`)
     }
   }
 
@@ -352,6 +395,18 @@ module.exports = class ByteArray {
       this.position += length
     } else {
       throw new Error(`Invalid character set: ${charset}`)
+    }
+  }
+
+  /**
+   * Writes an object
+   * @param {*} value
+   */
+  writeObject(value) {
+    switch (this.objectEncoding) {
+      case 0: return new AMF0(this).write(value)
+      case 3: return new AMF3(this).write(value)
+      default: throw new Error(`Unknown object encoding: ${this.objectEncoding}`)
     }
   }
 

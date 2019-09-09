@@ -22,3 +22,7 @@ ba.position = 0
 console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
 ```
+
+# AMF
+
+AMF0 is supported and AMF3 will be worked on.
