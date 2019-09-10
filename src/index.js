@@ -16,6 +16,11 @@ module.exports = class ByteArray {
    * @type {Object}
    */
   static classMapping = {}
+  /**
+   * Used to preserve alias strings
+   * @type {Object}
+   */
+  static aliasMapping = {}
 
   /**
    * @constructor
@@ -94,6 +99,14 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Returns the alias mapping
+   * @returns {Object}
+   */
+  get aliasMapping() {
+    return ByteArray.aliasMapping
+  }
+
+  /**
    * Preserves the class (type) of an object when the object is encoded in Action Message Format (AMF).
    * @param {String} aliasName
    * @param {Object} classObject
@@ -103,6 +116,7 @@ module.exports = class ByteArray {
     if (!classObject) throw new Error('Missing class object')
 
     this.classMapping[classObject] = aliasName
+    this.aliasMapping[aliasName] = classObject
   }
 
   /**

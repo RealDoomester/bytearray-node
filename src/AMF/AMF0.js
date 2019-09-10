@@ -16,24 +16,6 @@ const Markers = {
 }
 
 /**
- * Construct a class using variable string
- * @param {String} className
- * @param {Array} properties
- * @param {Array} values
- */
-const constructClass = (className, properties, values) => {
-  class Dummy {
-    constructor() {
-      if (properties && values) {
-        properties.map((property, idx) => this[property] = values[idx])
-      }
-    }
-  }
-
-  return new ({ [className]: class extends Dummy { } })[className]()
-}
-
-/**
  * @exports
  * @class
  */
@@ -273,13 +255,19 @@ module.exports = class AMF0 {
     let obj = {}
     const className = this.byteArr.readUTF()
 
+    if (!this.byteArr.aliasMapping[className]) {
+      throw new Error(`${className} is not registered.`)
+    }
+
+    const classObject = this.byteArr.aliasMapping[className]
+
     this.references.push(obj)
+
+    obj = new classObject()
 
     for (let key = this.byteArr.readUTF(); key !== ''; key = this.byteArr.readUTF()) {
       obj[key] = this.read()
     }
-
-    obj = constructClass(className, Object.keys(obj), Object.values(obj))
 
     return this.readObjectEnd(obj)
   }

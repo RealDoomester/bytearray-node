@@ -167,9 +167,9 @@ it('Can write/read AMF0 typed objects', (tape) => {
   const readObj2 = ba.readObject()
 
   tape.deepEqual(readObj1, obj1)
-  tape.equal(readObj1.constructor.name, 'com.person')
+  tape.equal(readObj1.constructor.name, 'Person')
   tape.deepEqual(readObj2, obj2)
-  tape.equal(readObj2.constructor.name, 'com.person')
+  tape.equal(readObj2.constructor.name, 'Person')
 
   tape.end()
 })
