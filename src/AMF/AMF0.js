@@ -256,7 +256,7 @@ module.exports = class AMF0 {
     const className = this.byteArr.readUTF()
 
     if (!this.byteArr.aliasMapping[className]) {
-      throw new Error(`${className} is not registered.`)
+      throw new Error(`The classname: '${className}' is not registered.`)
     }
 
     const classObject = this.byteArr.aliasMapping[className]
@@ -301,7 +301,7 @@ module.exports = class AMF0 {
       } else if (this.byteArr.classMapping[type]) {
         this.writeTypedObject(value)
       } else {
-        throw new Error(`Unknown value type: ${type}`)
+        throw new Error(`Unknown value type: '${type}'.`)
       }
     }
   }
