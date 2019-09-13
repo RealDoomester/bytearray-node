@@ -325,7 +325,6 @@ module.exports = class AMF0 {
       case Markers.ECMA_ARRAY: return this.readECMAArray()
       case Markers.DATE: return this.readDate()
       case Markers.TYPED_OBJECT: return this.readTypedObject()
-
       default: throw new Error(`Unknown or unsupported AMF0 marker: '${marker}'.`)
     }
   }

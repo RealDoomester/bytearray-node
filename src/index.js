@@ -1,8 +1,16 @@
 'use strict'
 
+/**
+ * Our utility dependencies
+ * @constant
+ */
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
+/**
+ * Our AMF dependencies
+ * @constant
+ */
 const AMF0 = require('./AMF/AMF0')
 const AMF3 = require('./AMF/AMF3')
 
@@ -58,7 +66,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the endianness but then as a string
+   * Returns the endianness as a string
    * @returns {String}
    */
   get endianStr() {
@@ -296,7 +304,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads multiple UTF-8 bytes
+   * Reads UTF-8 bytes
    * @param {Number} length
    * @returns {String}
    */
@@ -360,7 +368,7 @@ module.exports = class ByteArray {
   writeBytes(bytes, offset = 0, length = 0) {
     if (length === 0) length = bytes.length - offset
 
-    this.expand(this.position + length - this.position)
+    this.expand(length)
 
     for (let i = 0; i < length; i++) {
       this.buffer[i + this.position] = bytes.buffer[i + offset]
@@ -405,11 +413,10 @@ module.exports = class ByteArray {
    * @param {String} charset
    */
   writeMultiByte(value, charset = 'utf8') {
-    const length = Buffer.byteLength(value)
+    this.position += Buffer.byteLength(value)
 
     if (encodingExists(charset)) {
       this.buffer = Buffer.concat([this.buffer, encode(value, charset)])
-      this.position += length
     } else {
       throw new Error(`Invalid character set: '${charset}'.`)
     }
@@ -480,7 +487,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes multiple UTF-8 bytes
+   * Writes UTF-8 bytes
    * @param {String} value
    */
   writeUTFBytes(value) {

@@ -198,7 +198,6 @@ module.exports = class AMF3 {
       case Markers.FALSE: return false
       case Markers.INT: return this.readUInt29() << 3 >> 3
       case Markers.DOUBLE: return this.byteArr.readDouble()
-
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }
