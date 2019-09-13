@@ -172,6 +172,14 @@ module.exports = class AMF3 {
 
       if (type === Boolean) {
         this.byteArr.writeByte(value ? Markers.TRUE : Markers.FALSE)
+      } else if (type === Number) {
+        if (value << 3 >> 3 === value) {
+          this.byteArr.writeByte(Markers.INT)
+          this.writeUInt29(value & 0x1FFFFFFF)
+        } else {
+          this.byteArr.writeByte(Markers.DOUBLE)
+          this.byteArr.writeDouble(value)
+        }
       }
     }
   }
@@ -188,6 +196,8 @@ module.exports = class AMF3 {
       case Markers.UNDEFINED: return undefined
       case Markers.TRUE: return true
       case Markers.FALSE: return false
+      case Markers.INT: return this.readUInt29() << 3 >> 3
+      case Markers.DOUBLE: return this.byteArr.readDouble()
 
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
