@@ -128,6 +128,28 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Reads a buffer function
+   * @param {String} func
+   * @returns {Number}
+   */
+  readBufferFunc(func, pos) {
+    const value = this.buffer[func + this.endianStr](this.position)
+    this.position += pos
+    return value
+  }
+
+  /**
+   * Writes a buffer function
+   * @param {Number} value
+   * @param {String} func
+   */
+  writeBufferFunc(value, func, pos) {
+    this.expand(pos)
+    this.buffer[func + this.endianStr](value, this.position)
+    this.position += pos
+  }
+
+  /**
    * Expands the buffer when needed
    * @param {Number} value
    */
@@ -203,9 +225,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readDouble() {
-    const value = this.buffer[`readDouble${this.endianStr}`](this.position)
-    this.position += 8
-    return value
+    return this.readBufferFunc('readDouble', 8)
   }
 
   /**
@@ -213,9 +233,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readFloat() {
-    const value = this.buffer[`readFloat${this.endianStr}`](this.position)
-    this.position += 4
-    return value
+    return this.readBufferFunc('readFloat', 4)
   }
 
   /**
@@ -223,9 +241,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readInt() {
-    const value = this.buffer[`readInt32${this.endianStr}`](this.position)
-    this.position += 4
-    return value
+    return this.readBufferFunc('readInt32', 4)
   }
 
   /**
@@ -262,9 +278,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readShort() {
-    const value = this.buffer[`readInt16${this.endianStr}`](this.position)
-    this.position += 2
-    return value
+    return this.readBufferFunc('readInt16', 2)
   }
 
   /**
@@ -280,9 +294,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedInt() {
-    const value = this.buffer[`readUInt32${this.endianStr}`](this.position)
-    this.position += 4
-    return value
+    return this.readBufferFunc('readUInt32', 4)
   }
 
   /**
@@ -290,9 +302,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedShort() {
-    const value = this.buffer[`readUInt16${this.endianStr}`](this.position)
-    this.position += 2
-    return value
+    return this.readBufferFunc('readUInt16', 2)
   }
 
   /**
@@ -382,9 +392,7 @@ module.exports = class ByteArray {
   * @param {Number} value
   */
   writeDouble(value) {
-    this.expand(8)
-    this.buffer[`writeDouble${this.endianStr}`](value, this.position)
-    this.position += 8
+    this.writeBufferFunc(value, 'writeDouble', 8)
   }
 
   /**
@@ -392,9 +400,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeFloat(value) {
-    this.expand(4)
-    this.buffer[`writeFloat${this.endianStr}`](value, this.position)
-    this.position += 4
+    this.writeBufferFunc(value, 'writeFloat', 4)
   }
 
   /**
@@ -402,9 +408,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeInt(value) {
-    this.expand(4)
-    this.buffer[`writeInt32${this.endianStr}`](value, this.position)
-    this.position += 4
+    this.writeBufferFunc(value, 'writeInt32', 4)
   }
 
   /**
@@ -439,9 +443,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeShort(value) {
-    this.expand(2)
-    this.buffer[`writeInt16${this.endianStr}`](value, this.position)
-    this.position += 2
+    this.writeBufferFunc(value, 'writeInt16', 2)
   }
 
   /**
@@ -458,9 +460,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedInt(value) {
-    this.expand(4)
-    this.buffer[`writeUInt32${this.endianStr}`](value, this.position)
-    this.position += 4
+    this.writeBufferFunc(value, 'writeUInt32', 4)
   }
 
   /**
@@ -468,9 +468,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedShort(value) {
-    this.expand(2)
-    this.buffer[`writeUInt16${this.endianStr}`](value, this.position)
-    this.position += 2
+    this.writeBufferFunc(value, 'writeUInt16', 2)
   }
 
   /**
