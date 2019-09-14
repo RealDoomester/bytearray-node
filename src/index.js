@@ -85,7 +85,7 @@ module.exports = class ByteArray {
         this.buffer = this.buffer.slice(0, value)
         this.position = this.length
       } else {
-        this.expand(this.position !== 0 ? value - this.position : value)
+        this.expand(value)
       }
     }
   }
@@ -160,10 +160,9 @@ module.exports = class ByteArray {
    */
   expand(value) {
     if (this.bytesAvailable < value) {
-      const toExpand = value - this.bytesAvailable
-      const needsExpand = this.bytesAvailable + toExpand === value
+      const toExpandWith = value - this.bytesAvailable
 
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(needsExpand ? toExpand : value)])
+      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(toExpandWith)])
     }
   }
 
@@ -216,11 +215,17 @@ module.exports = class ByteArray {
    * @param {Number} length
    */
   readBytes(bytes, offset = 0, length = 0) {
-    const available = this.bytesAvailable
+    if (length === 0) {
+      length = this.bytesAvailable
+    }
 
-    if (length === 0) length = available
-    if (length > available) throw new RangeError('End of buffer was encountered.')
-    if (bytes.length < offset + length) bytes.expand(offset + length - bytes.position)
+    if (length > this.bytesAvailable) {
+      throw new RangeError('End of buffer was encountered.')
+    }
+
+    if (bytes.length < offset + length) {
+      bytes.expand(offset + length)
+    }
 
     for (let i = 0; i < length; i++) {
       bytes.buffer[i + offset] = this.buffer[i + this.position]
@@ -264,7 +269,7 @@ module.exports = class ByteArray {
     this.position += length
 
     if (encodingExists(charset)) {
-      return decode(this.buffer.slice(position, position + length), charset)
+      return decode(this.buffer.slice(position, this.position), charset)
     } else {
       throw new Error(`Invalid character set: '${charset}'.`)
     }
