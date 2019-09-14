@@ -73,7 +73,9 @@ module.exports = class AMF3 {
 
       int = i === 3 ? (int << 8) + byte : (int << 7) + (byte & 0x7F)
 
-      if (!(byte & 0x80)) break
+      if (!(byte & 0x80)) {
+        break
+      }
     }
 
     return int

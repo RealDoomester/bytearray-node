@@ -120,8 +120,13 @@ module.exports = class ByteArray {
    * @param {Object} classObject
    */
   static registerClassAlias(aliasName, classObject) {
-    if (!aliasName) throw new Error('Missing alias name.')
-    if (!classObject) throw new Error('Missing class object.')
+    if (!aliasName) {
+      throw new Error('Missing alias name.')
+    }
+
+    if (!classObject) {
+      throw new Error('Missing class object.')
+    }
 
     this.classMapping[classObject] = aliasName
     this.aliasMapping[aliasName] = classObject
@@ -175,10 +180,14 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   compress(algorithm) {
-    switch (algorithm.toLowerCase()) {
-      case 'zlib': this.buffer = deflateSync(this.buffer, { level: 9 }); break
-      case 'deflate': this.buffer = deflateRawSync(this.buffer); break
-      default: throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
+    algorithm = algorithm.toLowerCase()
+
+    if (algorithm === 'zlib') {
+      this.buffer = deflateSync(this.buffer, { level: 9 })
+    } else if (algorithm === 'deflate') {
+      this.buffer = deflateRawSync(this.buffer)
+    } else {
+      throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
     }
 
     this.position = this.length
@@ -266,10 +275,12 @@ module.exports = class ByteArray {
    * @returns {*}
    */
   readObject() {
-    switch (this.objectEncoding) {
-      case 0: return new AMF0(this).read()
-      case 3: return new AMF3(this).read()
-      default: throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
+    if (this.objectEncoding === 0) {
+      return new AMF0(this).read()
+    } else if (this.objectEncoding === 3) {
+      return new AMF3(this).read()
+    } else {
+      throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
     }
   }
 
@@ -343,10 +354,14 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   uncompress(algorithm) {
-    switch (algorithm.toLowerCase()) {
-      case 'zlib': this.buffer = inflateSync(this.buffer, { level: 9 }); break
-      case 'deflate': this.buffer = inflateRawSync(this.buffer); break
-      default: throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)
+    algorithm = algorithm.toLowerCase()
+
+    if (algorithm === 'zlib') {
+      this.buffer = inflateSync(this.buffer, { level: 9 })
+    } else if (algorithm === 'deflate') {
+      this.buffer = inflateRawSync(this.buffer)
+    } else {
+      throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)
     }
 
     this.position = 0
@@ -376,7 +391,9 @@ module.exports = class ByteArray {
    * @param {Number} length
    */
   writeBytes(bytes, offset = 0, length = 0) {
-    if (length === 0) length = bytes.length - offset
+    if (length === 0) {
+      length = bytes.length - offset
+    }
 
     this.expand(length)
 
@@ -431,10 +448,12 @@ module.exports = class ByteArray {
    * @param {*} value
    */
   writeObject(value) {
-    switch (this.objectEncoding) {
-      case 0: return new AMF0(this).write(value)
-      case 3: return new AMF3(this).write(value)
-      default: throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
+    if (this.objectEncoding === 0) {
+      return new AMF0(this).write(value)
+    } else if (this.objectEncoding === 3) {
+      return new AMF3(this).write(value)
+    } else {
+      throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
     }
   }
 
@@ -476,11 +495,7 @@ module.exports = class ByteArray {
    * @param {String} value
    */
   writeUTF(value) {
-    const length = Buffer.byteLength(value)
-
-    if (length > 65535) throw new RangeError('Out of range for writeUTF length.')
-
-    this.writeUnsignedShort(length)
+    this.writeUnsignedShort(Buffer.byteLength(value))
     this.writeMultiByte(value)
   }
 
