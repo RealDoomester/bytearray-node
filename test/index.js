@@ -14,6 +14,7 @@ it('Can write/read a byte', (tape) => {
   tape.equal(ba.readByte(), 1)
   tape.equal(ba.readUnsignedByte(), 2)
   tape.equal(ba.position, 2)
+
   tape.end()
 })
 
@@ -25,9 +26,10 @@ it('Can write/read a boolean', (tape) => {
 
   ba.position = 0
 
-  tape.equal(ba.readBoolean(), true)
-  tape.equal(ba.readBoolean(), false)
+  tape.ok(ba.readBoolean())
+  tape.notOk(ba.readBoolean())
   tape.equal(ba.position, 2)
+
   tape.end()
 })
 
@@ -63,6 +65,7 @@ it('Can write/read bytes', (tape) => {
   tape.equal(ba.readByte(), 5)
   tape.equal(ba.readByte(), 6)
   tape.equal(ba.position, 6)
+
   tape.end()
 })
 
@@ -77,6 +80,7 @@ it('Can write/read a short', (tape) => {
   tape.equal(ba.readShort(), 1)
   tape.equal(ba.readUnsignedShort(), 2)
   tape.equal(ba.position, 4)
+
   tape.end()
 })
 
@@ -91,20 +95,22 @@ it('Can write/read an int', (tape) => {
   tape.equal(ba.readInt(), 1)
   tape.equal(ba.readUnsignedInt(), 2)
   tape.equal(ba.position, 8)
+
   tape.end()
 })
 
 it('Can write/read a float/double', (tape) => {
   const ba = new ByteArray()
 
-  ba.writeFloat(1.123)
+  ba.writeFloat(1.23)
   ba.writeDouble(2.456)
 
   ba.position = 0
 
-  tape.equal(Math.round(ba.readFloat() * 1000) / 1000, 1.123)
+  tape.equal(parseFloat(ba.readFloat().toFixed(2)), 1.23)
   tape.equal(ba.readDouble(), 2.456)
   tape.equal(ba.position, 12)
+
   tape.end()
 })
 
@@ -129,6 +135,7 @@ it('Can write/read a string', (tape) => {
   ba.position = 0
 
   tape.equal(ba.readMultiByte(5, 'win1251'), 'Hello')
+
   tape.end()
 })
 
@@ -165,6 +172,7 @@ it('Can compress/uncompress the buffer', (tape) => {
   tape.equal(ba.position, 0)
   tape.equal(ba.readUTF(), 'Hello World!')
   tape.equal(ba.position, 14)
+
   tape.end()
 })
 
@@ -185,22 +193,6 @@ it('Supports BE/LE', (tape) => {
   ba.endian = true
   tape.equal(ba.readShort(), 2)
   tape.equal(ba.position, 4)
-  tape.end()
-})
-
-it('Supports bytesAvailable', (tape) => {
-  const ba = new ByteArray()
-
-  ba.writeUTFBytes('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus etc.')
-
-  ba.position = 0
-
-  while (ba.bytesAvailable > 0 && ba.readUTFBytes(1) !== 'a') { }
-
-  if (ba.position < ba.bytesAvailable) {
-    tape.equal(ba.position, 23)
-    tape.equal(ba.bytesAvailable, 47)
-  }
 
   tape.end()
 })
@@ -225,23 +217,15 @@ it('Supports starting buffers in the constructor', (tape) => {
   tape.equal(ba2.readByte(), 2)
   tape.equal(ba2.readByte(), 3)
   tape.equal(ba2.position, 3)
+
   tape.end()
 })
 
 it('Supports a while loop using bytesAvailable', (tape) => {
-  const buffer = Buffer.alloc(6)
-
-  buffer.writeInt8(69, 0)
-  buffer.writeInt8('F'.charCodeAt(), 1)
-  buffer.writeInt8(69, 2)
-  buffer.writeInt8('O'.charCodeAt(), 3)
-  buffer.writeInt8(69, 4)
-  buffer.writeInt8('O'.charCodeAt(), 5)
-
-  const ba = new ByteArray(buffer)
+  const ba = new ByteArray([69, 70, 69, 79, 69, 79])
   let str = ''
 
-  while (ba.bytesAvailable > 0) {
+  while (ba.bytesAvailable !== 0) {
     if (ba.readByte() === 69) {
       str += ba.readUTFBytes(1)
     }
@@ -249,6 +233,7 @@ it('Supports a while loop using bytesAvailable', (tape) => {
 
   tape.equal(str, 'FOO')
   tape.equal(ba.position, 6)
+
   tape.end()
 })
 
@@ -312,5 +297,6 @@ it('Supports the length property', (tape) => {
   ba.position = 0
   tape.equal(ba.readDouble(), 5)
   tape.equal(ba.readUTFBytes(5), 'Hello')
+
   tape.end()
 })

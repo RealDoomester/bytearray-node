@@ -51,6 +51,11 @@ module.exports = class ByteArray {
      */
     this.endian = true
     /**
+     * The byte order as a string
+     * @type {String}
+     */
+    this.endianStr = this.endian ? 'BE' : 'LE'
+    /**
      * The AMF object encoding
      * @type {Number}
      */
@@ -63,14 +68,6 @@ module.exports = class ByteArray {
    */
   get length() {
     return this.buffer.length
-  }
-
-  /**
-   * Returns the endianness as a string
-   * @returns {String}
-   */
-  get endianStr() {
-    return this.endian ? 'BE' : 'LE'
   }
 
   /**
@@ -160,9 +157,7 @@ module.exports = class ByteArray {
    */
   expand(value) {
     if (this.bytesAvailable < value) {
-      const toExpandWith = value - this.bytesAvailable
-
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(toExpandWith)])
+      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(value - this.bytesAvailable)])
     }
   }
 
