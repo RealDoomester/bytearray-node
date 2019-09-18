@@ -141,7 +141,7 @@ it('Can write/read AMF0 dates', (tape) => {
 
 it('Can write/read AMF0 typed objects', (tape) => {
   class Person {
-    constructor(name = '', age = 0, obj = {}) {
+    constructor(name, age, obj) {
       this.name = name
       this.age = age
       this.obj = obj
@@ -151,6 +151,9 @@ it('Can write/read AMF0 typed objects', (tape) => {
   const refObj = { id: 1 }
 
   ByteArray.registerClassAlias('com.person', Person)
+
+  tape.ok(!!ByteArray.classMapping[Person])
+  tape.ok(!!ByteArray.aliasMapping['com.person'])
 
   const ba = new ByteArray()
   ba.objectEncoding = 0

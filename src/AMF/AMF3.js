@@ -139,7 +139,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Creates or retrieves an object reference from the store
+   * Creates or retrieves an object reference from the table
    * @param {Object} value
    * @param {String} taple
    * @returns {Number|Boolean}

@@ -38,7 +38,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Creates or retrieves an object reference from the store
+   * Creates or retrieves an object reference from the table
    * @param {Object} value
    * @returns {Number|Boolean}
    */
@@ -59,10 +59,6 @@ module.exports = class AMF0 {
    * @param {Number} idx
    */
   writeReference(idx) {
-    if (idx > 65535) {
-      throw new Error('Max reference index reached.')
-    }
-
     this.byteArr.writeByte(Markers.REFERENCE)
     this.byteArr.writeUnsignedShort(idx)
   }
@@ -94,8 +90,6 @@ module.exports = class AMF0 {
    * @param {Boolean} useType
    */
   writeString(value, useType = true) {
-    value = String(value) // Used to convert array keys to string
-
     const isLong = value.length > 65535
 
     if (useType) {
@@ -137,9 +131,7 @@ module.exports = class AMF0 {
 
     this.references.push(obj)
 
-    for (let key = this.byteArr.readUTF(); key !== ''; key = this.byteArr.readUTF()) {
-      obj[key] = this.read()
-    }
+    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
 
     return this.readObjectEnd(obj)
   }
@@ -150,6 +142,7 @@ module.exports = class AMF0 {
    */
   writeECMAArray(value) {
     const idx = this.getReference(value)
+    const isDense = Object.keys(value).length === value.length
 
     if (idx !== false) {
       return this.writeReference(idx)
@@ -157,17 +150,15 @@ module.exports = class AMF0 {
 
     this.byteArr.writeByte(Markers.ECMA_ARRAY)
 
-    // Support associative/dense (and it's synonyms) arrays
-    if (Object.keys(value).length === value.length) {
+    if (isDense) {
       this.byteArr.writeUnsignedInt(value.length)
 
       for (let i = 0; i < value.length; i++) {
-        this.writeString(i, false)
+        this.writeString(String(i), false)
         this.write(value[i])
       }
     } else {
-      // AMF0 uses 0 length for associative arrays, we write the length anyway
-      this.byteArr.writeUnsignedInt(Object.keys(value).length)
+      this.byteArr.writeUnsignedInt(0) // AMF0 uses 0 length for associative arrays
 
       for (const key in value) {
         this.writeString(key, false)
@@ -184,13 +175,11 @@ module.exports = class AMF0 {
    */
   readECMAArray() {
     const obj = {}
-    const length = this.byteArr.readUnsignedInt()
+    this.byteArr.readUnsignedInt() // The length
 
     this.references.push(obj)
 
-    for (let key = this.byteArr.readUTF(); key !== '' && Object.keys(obj).length !== length; key = this.byteArr.readUTF()) {
-      obj[key] = this.read()
-    }
+    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
 
     return this.readObjectEnd(obj)
   }
@@ -218,8 +207,7 @@ module.exports = class AMF0 {
   readDate() {
     const date = new Date(this.byteArr.readDouble())
 
-    this.byteArr.readShort()
-
+    this.byteArr.readShort() // The timezone offset
     this.references.push(date)
 
     return date
@@ -237,7 +225,7 @@ module.exports = class AMF0 {
     }
 
     this.byteArr.writeByte(Markers.TYPED_OBJECT)
-    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor]) // Write registered alias name
+    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor]) // Write alias name
 
     for (const key in value) {
       this.writeString(key, false)
@@ -265,9 +253,7 @@ module.exports = class AMF0 {
 
     obj = new classObject()
 
-    for (let key = this.byteArr.readUTF(); key !== ''; key = this.byteArr.readUTF()) {
-      obj[key] = this.read()
-    }
+    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
 
     return this.readObjectEnd(obj)
   }
