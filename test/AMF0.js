@@ -101,7 +101,6 @@ it('Can write/read AMF0 arrays', (tape) => {
   const ref2 = { a: obj1, b: obj1, c: obj2, d: obj2 }
 
   const denseArr1 = [1, 2, 3]
-  const expectedDenseArr1 = { '0': 1, '1': 2, '2': 3 }
 
   const assocArr1 = Object.assign([], { 'Values': [1, 2, 3], 'Test': 'Daan' })
   const assocArr2 = Object.assign([], { 'A': 'B' })
@@ -116,7 +115,7 @@ it('Can write/read AMF0 arrays', (tape) => {
 
   ba.position = 0
 
-  tape.deepEqual(ba.readObject(), expectedDenseArr1)
+  tape.deepEqual(ba.readObject(), denseArr1)
   tape.deepEqual(ba.readObject(), assocArr1)
   tape.deepEqual(ba.readObject(), refAssocArr)
   tape.deepEqual(ba.readObject(), bigAssocArr)

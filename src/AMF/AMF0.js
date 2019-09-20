@@ -158,7 +158,7 @@ module.exports = class AMF0 {
         this.write(value[i])
       }
     } else {
-      this.byteArr.writeUnsignedInt(0) // AMF0 uses 0 length for associative arrays
+      this.byteArr.writeUnsignedInt(Object.keys(value).length)
 
       for (const key in value) {
         this.writeString(key, false)
@@ -171,17 +171,21 @@ module.exports = class AMF0 {
 
   /**
    * Read an ECMA array
-   * @returns {Object}
+   * @returns {Array}
    */
   readECMAArray() {
-    const obj = {}
-    this.byteArr.readUnsignedInt() // The length
+    const arr = []
+    const length = this.byteArr.readUnsignedInt()
 
-    this.references.push(obj)
+    this.references.push(arr)
 
-    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
+    for (let i = 0; i < length; i++) {
+      arr[this.byteArr.readUTF()] = this.read()
+    }
 
-    return this.readObjectEnd(obj)
+    this.byteArr.position += 2 // Object end string
+
+    return this.readObjectEnd(arr)
   }
 
   /**
