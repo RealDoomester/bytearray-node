@@ -142,28 +142,17 @@ module.exports = class AMF0 {
    */
   writeECMAArray(value) {
     const idx = this.getReference(value)
-    const isDense = Object.keys(value).length === value.length
 
     if (idx !== false) {
       return this.writeReference(idx)
     }
 
     this.byteArr.writeByte(Markers.ECMA_ARRAY)
+    this.byteArr.writeUnsignedInt(Object.keys(value).length)
 
-    if (isDense) {
-      this.byteArr.writeUnsignedInt(value.length)
-
-      for (let i = 0; i < value.length; i++) {
-        this.writeString(String(i), false)
-        this.write(value[i])
-      }
-    } else {
-      this.byteArr.writeUnsignedInt(Object.keys(value).length)
-
-      for (const key in value) {
-        this.writeString(key, false)
-        this.write(value[key])
-      }
+    for (const i in value) {
+      this.writeString(String(i), false)
+      this.write(value[i])
     }
 
     this.writeObjectEnd()
@@ -183,9 +172,11 @@ module.exports = class AMF0 {
       arr[this.byteArr.readUTF()] = this.read()
     }
 
-    this.byteArr.position += 2 // Object end string
-
-    return this.readObjectEnd(arr)
+    if (this.byteArr.readShort() === 0) {
+      return this.readObjectEnd(arr)
+    } else {
+      throw new Error('Invalid object end string found.')
+    }
   }
 
   /**
