@@ -51,11 +51,6 @@ module.exports = class ByteArray {
      */
     this.endian = true
     /**
-     * The byte order as a string
-     * @type {String}
-     */
-    this.endianStr = this.endian ? 'BE' : 'LE'
-    /**
      * The AMF object encoding
      * @type {Number}
      */
@@ -68,6 +63,14 @@ module.exports = class ByteArray {
    */
   get length() {
     return this.buffer.length
+  }
+
+  /**
+   * Returns the byte order as a string
+   * @returns {String}
+   */
+  get endianStr() {
+    return this.endian ? 'BE' : 'LE'
   }
 
   /**
