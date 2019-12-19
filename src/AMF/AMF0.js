@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * The AMF0 markers
+ * @constant
+ */
 const Markers = {
   NUMBER: 0x00,
   BOOLEAN: 0x01,

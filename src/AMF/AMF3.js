@@ -1,5 +1,9 @@
 'use strict'
 
+/**
+ * The AMF3 markers
+ * @constant
+ */
 const Markers = {
   UNDEFINED: 0x00,
   NULL: 0x01,
