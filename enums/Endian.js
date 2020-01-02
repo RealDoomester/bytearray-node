@@ -4,6 +4,6 @@
  * @exports
  */
 module.exports = {
-  LITTLE_ENDIAN: false,
-  BIG_ENDIAN: true
+  LITTLE_ENDIAN: 'LE',
+  BIG_ENDIAN: 'BE'
 }

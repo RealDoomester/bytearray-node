@@ -54,7 +54,7 @@ module.exports = class ByteArray {
     this.position = 0
     /**
      * The byte order
-     * @type {Boolean}
+     * @type {String}
      */
     this.endian = Endian.BIG_ENDIAN
     /**
@@ -70,14 +70,6 @@ module.exports = class ByteArray {
    */
   get length() {
     return this.buffer.length
-  }
-
-  /**
-   * Returns the byte order as a string
-   * @returns {String}
-   */
-  get endianStr() {
-    return this.endian ? 'BE' : 'LE'
   }
 
   /**
@@ -145,7 +137,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readBufferFunc(func, pos) {
-    const value = this.buffer[func + this.endianStr](this.position)
+    const value = this.buffer[func + this.endian](this.position)
     this.position += pos
     return value
   }
@@ -157,7 +149,7 @@ module.exports = class ByteArray {
    */
   writeBufferFunc(value, func, pos) {
     this.expand(pos)
-    this.buffer[func + this.endianStr](value, this.position)
+    this.buffer[func + this.endian](value, this.position)
     this.position += pos
   }
 
