@@ -2,11 +2,12 @@
 
 const it = require('tape')
 const ByteArray = require('../src/')
+const ObjectEncoding = require('../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   ba.writeObject(null)
   ba.writeObject(undefined)
@@ -25,7 +26,7 @@ it('Can write/read AMF0 values representing their marker', (tape) => {
 
 it('Can write/read AMF0 numbers', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   ba.writeObject(100)
   ba.writeObject(-5)
@@ -44,7 +45,7 @@ it('Can write/read AMF0 numbers', (tape) => {
 
 it('Can write/read AMF0 strings', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   const longString = randomBytes(32768).toString('hex')
 
@@ -61,7 +62,7 @@ it('Can write/read AMF0 strings', (tape) => {
 
 it('Can write/read AMF0 objects', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   const obj1 = { id: 1 }
   const obj2 = { id: 2 }
@@ -92,7 +93,7 @@ it('Can write/read AMF0 objects', (tape) => {
 
 it('Can write/read AMF0 arrays', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   const obj1 = { id: 1 }
   const obj2 = { id: 2 }
@@ -125,7 +126,7 @@ it('Can write/read AMF0 arrays', (tape) => {
 
 it('Can write/read AMF0 dates', (tape) => {
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   const date = new Date(2001, 11, 25)
 
@@ -155,7 +156,7 @@ it('Can write/read AMF0 typed objects', (tape) => {
   tape.ok(!!ByteArray.aliasMapping['com.person'])
 
   const ba = new ByteArray()
-  ba.objectEncoding = 0
+  ba.objectEncoding = ObjectEncoding.AMF0
 
   const obj1 = new Person('Daan', 17, refObj)
   const obj2 = new Person('Gravix', 15, refObj)

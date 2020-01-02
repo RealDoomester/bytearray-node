@@ -8,6 +8,13 @@ const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zl
 const { encodingExists, decode, encode } = require('iconv-lite')
 
 /**
+ * Our enums
+ * @constant
+ */
+const Endian = require('../enums/Endian')
+const ObjectEncoding = require('../enums/ObjectEncoding')
+
+/**
  * Our AMF dependencies
  * @constant
  */
@@ -49,12 +56,12 @@ module.exports = class ByteArray {
      * The byte order
      * @type {Boolean}
      */
-    this.endian = true
+    this.endian = Endian.BIG_ENDIAN
     /**
      * The AMF object encoding
      * @type {Number}
      */
-    this.objectEncoding = 3
+    this.objectEncoding = ObjectEncoding.DEFAULT
   }
 
   /**

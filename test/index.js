@@ -2,6 +2,7 @@
 
 const it = require('tape')
 const ByteArray = require('../src/')
+const Endian = require('../enums/Endian')
 
 it('Can write/read a byte', (tape) => {
   const ba = new ByteArray()
@@ -154,18 +155,18 @@ it('Can compress/uncompress the buffer', (tape) => {
 it('Supports BE/LE', (tape) => {
   const ba = new ByteArray()
 
-  ba.endian = false // LE
+  ba.endian = Endian.LITTLE_ENDIAN
   ba.writeShort(1)
 
-  ba.endian = true // BE
+  ba.endian = Endian.BIG_ENDIAN
   ba.writeShort(2)
 
   ba.position = 0
 
-  ba.endian = false
+  ba.endian = Endian.LITTLE_ENDIAN
   tape.equal(ba.readShort(), 1)
 
-  ba.endian = true
+  ba.endian = Endian.BIG_ENDIAN
   tape.equal(ba.readShort(), 2)
 
   tape.end()
