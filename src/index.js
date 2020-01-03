@@ -13,6 +13,7 @@ const { encodingExists, decode, encode } = require('iconv-lite')
  */
 const Endian = require('../enums/Endian')
 const ObjectEncoding = require('../enums/ObjectEncoding')
+const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 
 /**
  * Our AMF dependencies
@@ -175,12 +176,12 @@ module.exports = class ByteArray {
    * Compresses the buffer
    * @param {String} algorithm
    */
-  compress(algorithm) {
+  compress(algorithm = CompressionAlgorithm.ZLIB) {
     algorithm = algorithm.toLowerCase()
 
-    if (algorithm === 'zlib') {
+    if (algorithm === CompressionAlgorithm.ZLIB) {
       this.buffer = deflateSync(this.buffer, { level: 9 })
-    } else if (algorithm === 'deflate') {
+    } else if (algorithm === CompressionAlgorithm.DEFLATE) {
       this.buffer = deflateRawSync(this.buffer)
     } else {
       throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
@@ -355,12 +356,12 @@ module.exports = class ByteArray {
    * Decompresses the buffer
    * @param {String} algorithm
    */
-  uncompress(algorithm) {
+  uncompress(algorithm = CompressionAlgorithm.ZLIB) {
     algorithm = algorithm.toLowerCase()
 
-    if (algorithm === 'zlib') {
+    if (algorithm === CompressionAlgorithm.ZLIB) {
       this.buffer = inflateSync(this.buffer, { level: 9 })
-    } else if (algorithm === 'deflate') {
+    } else if (algorithm === CompressionAlgorithm.DEFLATE) {
       this.buffer = inflateRawSync(this.buffer)
     } else {
       throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)

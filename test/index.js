@@ -3,6 +3,7 @@
 const it = require('tape')
 const ByteArray = require('../src/')
 const Endian = require('../enums/Endian')
+const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 
 it('Can write/read a byte', (tape) => {
   const ba = new ByteArray()
@@ -135,8 +136,8 @@ it('Can compress/uncompress the buffer', (tape) => {
 
   ba.writeUTF('Hello World!')
 
-  ba.compress('deflate')
-  ba.uncompress('deflate')
+  ba.compress(CompressionAlgorithm.DEFLATE)
+  ba.uncompress(CompressionAlgorithm.DEFLATE)
 
   tape.equal(ba.readUTF(), 'Hello World!')
 
@@ -144,8 +145,8 @@ it('Can compress/uncompress the buffer', (tape) => {
 
   ba.writeUTF('Hello World!')
 
-  ba.compress('zlib')
-  ba.uncompress('zlib')
+  ba.compress()
+  ba.uncompress()
 
   tape.equal(ba.readUTF(), 'Hello World!')
 
