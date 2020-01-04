@@ -5,6 +5,8 @@
  * @constant
  */
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
+const { LZMA } = require('lzma-native')
+const { loopWhile } = require('deasync')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
 /**
@@ -177,12 +179,25 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   compress(algorithm = CompressionAlgorithm.ZLIB) {
+    if (this.length === 0) {
+      return
+    }
+
     algorithm = algorithm.toLowerCase()
 
     if (algorithm === CompressionAlgorithm.ZLIB) {
       this.buffer = deflateSync(this.buffer, { level: 9 })
     } else if (algorithm === CompressionAlgorithm.DEFLATE) {
       this.buffer = deflateRawSync(this.buffer)
+    } else if (algorithm === CompressionAlgorithm.LZMA) {
+      let done = false
+
+      LZMA().compress(this.buffer, 1).then((res) => {
+        this.buffer = res
+        done = true
+      }).catch((err) => { throw err })
+
+      loopWhile(() => { return !done })
     } else {
       throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
     }
@@ -357,12 +372,25 @@ module.exports = class ByteArray {
    * @param {String} algorithm
    */
   uncompress(algorithm = CompressionAlgorithm.ZLIB) {
+    if (this.length === 0) {
+      return
+    }
+
     algorithm = algorithm.toLowerCase()
 
     if (algorithm === CompressionAlgorithm.ZLIB) {
       this.buffer = inflateSync(this.buffer, { level: 9 })
     } else if (algorithm === CompressionAlgorithm.DEFLATE) {
       this.buffer = inflateRawSync(this.buffer)
+    } else if (algorithm === CompressionAlgorithm.LZMA) {
+      let done = false
+
+      LZMA().decompress(this.buffer).then((res) => {
+        this.buffer = res
+        done = true
+      }).catch((err) => { throw err })
+
+      loopWhile(() => { return !done })
     } else {
       throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)
     }
