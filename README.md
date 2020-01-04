@@ -14,6 +14,7 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 const ByteArray = require('bytearray-node')
 const Endian = require('bytearray-node/enums/Endian')
 const ObjectEncoding = require('bytearray-node/enums/ObjectEncoding')
+const CompressionAlgorithm = require('bytearray-node/enums/CompressionAlgorithm')
 
 const ba = new ByteArray()
 
@@ -21,12 +22,17 @@ ba.writeByte(1)
 ba.writeShort(5)
 
 ba.position = 0
+
 //ba.endian = Endian.BIG_ENDIAN
 //ba.endian = Endian.LITTLE_ENDIAN
 
 //ba.objectEncoding = ObjectEncoding.AMF0
 //ba.objectEncoding = ObjectEncoding.AMF3
 //ba.objectEncoding = ObjectEncoding.DEFAULT
+
+//CompressionAlgorithm.DEFLATE
+//CompressionAlgorithm.LZMA
+//CompressionAlgorithm.ZLIB
 
 console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
