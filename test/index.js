@@ -6,6 +6,8 @@ const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 
 it('Can write/read a byte', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.writeByte(1)
@@ -20,6 +22,8 @@ it('Can write/read a byte', (tape) => {
 })
 
 it('Can write/read a boolean', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.writeBoolean(true)
@@ -34,6 +38,8 @@ it('Can write/read a boolean', (tape) => {
 })
 
 it('Can write/read bytes', (tape) => {
+  tape.plan(6)
+
   const ba = new ByteArray()
 
   ba.writeByte(1)
@@ -67,6 +73,8 @@ it('Can write/read bytes', (tape) => {
 })
 
 it('Can write/read a short', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.writeShort(1)
@@ -81,6 +89,8 @@ it('Can write/read a short', (tape) => {
 })
 
 it('Can write/read an int', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.writeInt(1)
@@ -95,6 +105,8 @@ it('Can write/read an int', (tape) => {
 })
 
 it('Can write/read a float/double', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.writeFloat(1.23)
@@ -109,6 +121,8 @@ it('Can write/read a float/double', (tape) => {
 })
 
 it('Can write/read a string', (tape) => {
+  tape.plan(4)
+
   const ba = new ByteArray()
 
   ba.writeUTF('Hello World!')
@@ -132,6 +146,8 @@ it('Can write/read a string', (tape) => {
 })
 
 it('Can compress/uncompress the buffer', async (tape) => {
+  tape.plan(3)
+
   const ba = new ByteArray()
 
   ba.writeUTF('Hello World!')
@@ -162,6 +178,8 @@ it('Can compress/uncompress the buffer', async (tape) => {
 })
 
 it('Supports BE/LE', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
 
   ba.endian = Endian.LITTLE_ENDIAN
@@ -182,6 +200,8 @@ it('Supports BE/LE', (tape) => {
 })
 
 it('Supports starting buffers in the constructor', (tape) => {
+  tape.plan(6)
+
   const ba = new ByteArray([1, 2, 3])
 
   tape.equal(ba.readByte(), 1)
@@ -204,6 +224,8 @@ it('Supports starting buffers in the constructor', (tape) => {
 })
 
 it('Supports a while loop using bytesAvailable', (tape) => {
+  tape.plan(1)
+
   const ba = new ByteArray([69, 70, 69, 79, 69, 79])
   let str = ''
 
@@ -219,6 +241,8 @@ it('Supports a while loop using bytesAvailable', (tape) => {
 })
 
 it('Supports the length property', (tape) => {
+  tape.plan(21)
+
   const ba = new ByteArray()
 
   ba.length = 3

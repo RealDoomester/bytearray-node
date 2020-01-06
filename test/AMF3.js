@@ -4,6 +4,8 @@ const it = require('tape')
 const ByteArray = require('../src/')
 
 it('Can write/read AMF3 values representing their marker', (tape) => {
+  tape.plan(4)
+
   const ba = new ByteArray()
 
   ba.writeObject(null)
@@ -22,6 +24,8 @@ it('Can write/read AMF3 values representing their marker', (tape) => {
 })
 
 it('Can write/read AMF3 numbers', (tape) => {
+  tape.plan(8)
+
   const ba = new ByteArray()
 
   ba.writeObject(100)

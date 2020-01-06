@@ -6,6 +6,8 @@ const ObjectEncoding = require('../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {
+  tape.plan(4)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -25,6 +27,8 @@ it('Can write/read AMF0 values representing their marker', (tape) => {
 })
 
 it('Can write/read AMF0 numbers', (tape) => {
+  tape.plan(4)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -44,6 +48,8 @@ it('Can write/read AMF0 numbers', (tape) => {
 })
 
 it('Can write/read AMF0 strings', (tape) => {
+  tape.plan(2)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -61,6 +67,8 @@ it('Can write/read AMF0 strings', (tape) => {
 })
 
 it('Can write/read AMF0 objects', (tape) => {
+  tape.plan(5)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -92,6 +100,8 @@ it('Can write/read AMF0 objects', (tape) => {
 })
 
 it('Can write/read AMF0 arrays', (tape) => {
+  tape.plan(4)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -125,6 +135,8 @@ it('Can write/read AMF0 arrays', (tape) => {
 })
 
 it('Can write/read AMF0 dates', (tape) => {
+  tape.plan(1)
+
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
@@ -140,6 +152,8 @@ it('Can write/read AMF0 dates', (tape) => {
 })
 
 it('Can write/read AMF0 typed objects', (tape) => {
+  tape.plan(6)
+
   class Person {
     constructor(name, age, obj) {
       this.name = name
