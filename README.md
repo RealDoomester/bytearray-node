@@ -28,7 +28,6 @@ ba.position = 0
 
 //ba.objectEncoding = ObjectEncoding.AMF0
 //ba.objectEncoding = ObjectEncoding.AMF3
-//ba.objectEncoding = ObjectEncoding.DEFAULT
 
 //CompressionAlgorithm.DEFLATE
 //CompressionAlgorithm.LZMA

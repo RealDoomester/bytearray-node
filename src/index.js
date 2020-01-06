@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * Our utility dependencies
+ * Our dependencies
  * @constant
  */
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
@@ -64,7 +64,7 @@ module.exports = class ByteArray {
      * The AMF object encoding
      * @type {Number}
      */
-    this.objectEncoding = ObjectEncoding.DEFAULT
+    this.objectEncoding = ObjectEncoding.AMF3
   }
 
   /**
@@ -137,6 +137,7 @@ module.exports = class ByteArray {
   /**
    * Reads a buffer function
    * @param {String} func
+   * @param {Number} pos
    * @returns {Number}
    */
   readBufferFunc(func, pos) {
@@ -149,6 +150,7 @@ module.exports = class ByteArray {
    * Writes a buffer function
    * @param {Number} value
    * @param {String} func
+   * @param {Number} pos
    */
   writeBufferFunc(value, func, pos) {
     this.expand(pos)
@@ -286,9 +288,9 @@ module.exports = class ByteArray {
    * @returns {*}
    */
   readObject() {
-    if (this.objectEncoding === 0) {
+    if (this.objectEncoding === ObjectEncoding.AMF0) {
       return new AMF0(this).read()
-    } else if (this.objectEncoding === 3) {
+    } else if (this.objectEncoding === ObjectEncoding.AMF3) {
       return new AMF3(this).read()
     } else {
       throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
@@ -349,7 +351,7 @@ module.exports = class ByteArray {
    * @returns {Object}
    */
   toJSON() {
-    return this.buffer.toJSON()
+    return Object.assign({}, this.toArray())
   }
 
   /**
@@ -465,9 +467,9 @@ module.exports = class ByteArray {
    * @param {*} value
    */
   writeObject(value) {
-    if (this.objectEncoding === 0) {
+    if (this.objectEncoding === ObjectEncoding.AMF0) {
       return new AMF0(this).write(value)
-    } else if (this.objectEncoding === 3) {
+    } else if (this.objectEncoding === ObjectEncoding.AMF3) {
       return new AMF3(this).write(value)
     } else {
       throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
