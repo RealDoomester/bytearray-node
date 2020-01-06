@@ -19,12 +19,6 @@ const ObjectEncoding = require('bytearray-node/enums/ObjectEncoding')
 const CompressionAlgorithm = require('bytearray-node/enums/CompressionAlgorithm')
 
 const ba = new ByteArray()
-
-ba.writeByte(1)
-ba.writeShort(5)
-
-ba.position = 0
-
 //ba.endian = Endian.BIG_ENDIAN
 //ba.endian = Endian.LITTLE_ENDIAN
 
@@ -34,6 +28,11 @@ ba.position = 0
 //CompressionAlgorithm.DEFLATE
 //CompressionAlgorithm.LZMA
 //CompressionAlgorithm.ZLIB
+
+ba.writeByte(1)
+ba.writeShort(5)
+
+ba.position = 0
 
 console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
