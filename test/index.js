@@ -131,7 +131,7 @@ it('Can write/read a string', (tape) => {
   tape.end()
 })
 
-it('Can compress/uncompress the buffer', (tape) => {
+it('Can compress/uncompress the buffer', async (tape) => {
   const ba = new ByteArray()
 
   ba.writeUTF('Hello World!')
@@ -149,6 +149,14 @@ it('Can compress/uncompress the buffer', (tape) => {
   ba.uncompress()
 
   tape.equal(ba.readUTF(), 'Hello World!')
+
+  ba.clear()
+
+  ba.writeUTF('Hello from LZMA.')
+  await ba.compress(CompressionAlgorithm.LZMA)
+  await ba.uncompress(CompressionAlgorithm.LZMA)
+
+  tape.equal(ba.readUTF(), 'Hello from LZMA.')
 
   tape.end()
 })
