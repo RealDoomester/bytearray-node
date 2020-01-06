@@ -467,9 +467,9 @@ module.exports = class ByteArray {
    */
   writeObject(value) {
     if (this.objectEncoding === ObjectEncoding.AMF0) {
-      return new AMF0(this).write(value)
+      new AMF0(this).write(value)
     } else if (this.objectEncoding === ObjectEncoding.AMF3) {
-      return new AMF3(this).write(value)
+      new AMF3(this).write(value)
     } else {
       throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
     }
