@@ -350,7 +350,7 @@ module.exports = class ByteArray {
    * @returns {Object}
    */
   toJSON() {
-    return Object.assign({}, this.toArray())
+    return Object.assign({}, this.buffer.toJSON().data)
   }
 
   /**
