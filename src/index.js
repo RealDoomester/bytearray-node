@@ -355,10 +355,15 @@ module.exports = class ByteArray {
 
   /**
    * Converts the buffer to a string
+   * @param {String} charset
    * @returns {String}
    */
-  toString() {
-    return this.buffer.toString('utf8')
+  toString(charset = 'utf8') {
+    if (encodingExists(charset)) {
+      return decode(this.buffer, charset)
+    } else {
+      throw new Error(`Invalid character set: '${charset}'.`)
+    }
   }
 
   /**
