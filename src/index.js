@@ -276,7 +276,13 @@ module.exports = class ByteArray {
     this.position += length
 
     if (encodingExists(charset)) {
-      return decode(this.buffer.slice(position, this.position), charset)
+      const value = decode(this.buffer.slice(position, this.position), charset)
+
+      if (value.length !== length) {
+        throw new RangeError('End of buffer was encountered.')
+      }
+
+      return value
     } else {
       throw new Error(`Invalid character set: '${charset}'.`)
     }
