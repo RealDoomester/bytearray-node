@@ -276,7 +276,11 @@ module.exports = class ByteArray {
     this.position += length
 
     if (encodingExists(charset)) {
-      const value = decode(this.buffer.slice(position, this.position), charset)
+      const b = this.buffer.slice(position, this.position)
+      const stripBOM = (charset === 'utf8' || charset === 'utf-8') && b.length >= 3 && b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF
+      const value = decode(b, charset, { stripBOM })
+
+      stripBOM ? length -= 3 : 0
 
       if (value.length !== length) {
         throw new RangeError('End of buffer was encountered.')

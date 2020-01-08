@@ -1,6 +1,6 @@
 {
   "name": "bytearray-node",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.",
   "main": "./src/",
   "engines": {
@@ -33,7 +33,7 @@
     "lzma-native": "^6.0.0"
   },
   "devDependencies": {
-    "tape": "^4.12.1"
+    "tape": "^4.13.0"
   },
   "author": "Zaseth",
   "license": "MIT"
