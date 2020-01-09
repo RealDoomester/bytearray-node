@@ -17,6 +17,7 @@ const ByteArray = require('bytearray-node')
 const Endian = require('bytearray-node/enums/Endian')
 const ObjectEncoding = require('bytearray-node/enums/ObjectEncoding')
 const CompressionAlgorithm = require('bytearray-node/enums/CompressionAlgorithm')
+const IExternalizable = require('bytearray-node/enums/IExternalizable')
 
 const ba = new ByteArray()
 //ba.endian = Endian.BIG_ENDIAN

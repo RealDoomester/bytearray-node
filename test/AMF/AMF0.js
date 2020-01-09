@@ -1,8 +1,8 @@
 'use strict'
 
 const it = require('tape')
-const ByteArray = require('../src/')
-const ObjectEncoding = require('../enums/ObjectEncoding')
+const ByteArray = require('../../src/')
+const ObjectEncoding = require('../../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {

@@ -1,7 +1,7 @@
 'use strict'
 
 const it = require('tape')
-const ByteArray = require('../src/')
+const ByteArray = require('../../src/')
 
 it('Can write/read AMF3 values representing their marker', (tape) => {
   tape.plan(4)
