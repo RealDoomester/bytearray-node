@@ -122,7 +122,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Find out if there's a reference in the defined reference table
+   * Set the current reference
    * @param {String} table
    * @returns {Boolean}
    */
@@ -143,9 +143,9 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Creates or retrieves an object reference from the table
-   * @param {Object} value
-   * @param {String} taple
+   * Get or set a reference
+   * @param {String|Object} value
+   * @param {String} table
    * @returns {Number|Boolean}
    */
   getReference(value, table) {
@@ -155,7 +155,7 @@ module.exports = class AMF3 {
       return idx
     }
 
-    if (data === null || typeof data === 'string' && !data.length) {
+    if (!data || typeof data === 'string' && !data.length) {
       return false
     }
 

@@ -42,7 +42,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Creates or retrieves an object reference from the table
+   * Get or set a reference
    * @param {Object} value
    * @returns {Number|Boolean}
    */
@@ -206,7 +206,7 @@ module.exports = class AMF0 {
   readDate() {
     const date = new Date(this.byteArr.readDouble())
 
-    this.byteArr.readShort() // The timezone offset
+    this.byteArr.readShort()
     this.references.push(date)
 
     return date
@@ -224,7 +224,7 @@ module.exports = class AMF0 {
     }
 
     this.byteArr.writeByte(Markers.TYPED_OBJECT)
-    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor]) // Write alias name
+    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor])
 
     for (const key in value) {
       this.writeString(key, false)
