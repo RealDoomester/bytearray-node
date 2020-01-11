@@ -208,6 +208,37 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write a date
+   * @param {Date} value
+   */
+  writeDate(value) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      this.writeUInt29(1)
+      this.byteArr.writeDouble(value.getTime())
+    }
+  }
+
+  /**
+   * Read a date
+   * @returns {Date}
+   */
+  readDate() {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    const date = new Date(this.byteArr.readDouble())
+
+    this.objectReferences.push(date)
+
+    return date
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -231,6 +262,9 @@ module.exports = class AMF3 {
         }
       } else if (type === String) {
         this.writeString(value)
+      } else if (type === Date) {
+        this.byteArr.writeByte(Markers.DATE)
+        this.writeDate(value)
       }
     }
   }
@@ -250,6 +284,7 @@ module.exports = class AMF3 {
       case Markers.INT: return this.readUInt29() << 3 >> 3
       case Markers.DOUBLE: return this.byteArr.readDouble()
       case Markers.STRING: return this.readString()
+      case Markers.DATE: return this.readDate()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }

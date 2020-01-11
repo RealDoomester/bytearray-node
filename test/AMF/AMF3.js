@@ -66,3 +66,18 @@ it('Can write/read AMF3 strings', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF3 dates', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const date = new Date(2001, 11, 25)
+
+  ba.writeObject(date)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), date)
+
+  tape.end()
+})
