@@ -14,13 +14,7 @@ const Markers = {
   STRING: 0x06,
   DATE: 0x08,
   ARRAY: 0x09,
-  OBJECT: 0x0A,
-  BYTE_ARRAY: 0x0C,
-  VECTOR_INT: 0x0D,
-  VECTOR_UINT: 0x0E,
-  VECTOR_DOUBLE: 0x0F,
-  VECTOR_OBJECT: 0x10,
-  DICTIONARY: 0x11
+  OBJECT: 0x0A
 }
 
 /**
