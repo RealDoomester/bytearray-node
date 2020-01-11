@@ -239,6 +239,81 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write an array
+   * @param {Array} value
+   */
+  writeArray(value) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      if (Object.keys(value).length === value.length) {
+        this.writeUInt29((value.length << 1) | 1)
+        this.writeUInt29(1)
+
+        for (const i in value) {
+          this.write(value[i])
+        }
+      } else {
+        this.writeUInt29(1)
+
+        for (const key in value) {
+          this.writeString(key, false)
+          this.write(value[key])
+        }
+
+        this.writeUInt29(1)
+      }
+    }
+  }
+
+  /**
+   * Read an array
+   * @returns {Array}
+   */
+  readArray() {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    const denseCount = this.flags
+
+    let finalArr
+    let associativeCount = 0
+
+    while (true) {
+      const key = this.readString()
+
+      if (!key) {
+        break
+      }
+
+      associativeCount++
+
+      if (associativeCount === 1) {
+        finalArr = {}
+
+        this.objectReferences.push(finalArr)
+      }
+
+      finalArr[key] = this.read()
+    }
+
+    if (associativeCount === 0) {
+      finalArr = []
+
+      this.objectReferences.push(finalArr)
+    }
+
+    for (let i = 0; i < denseCount; i++) {
+      finalArr[i] = this.read()
+    }
+
+    return finalArr
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -265,6 +340,9 @@ module.exports = class AMF3 {
       } else if (type === Date) {
         this.byteArr.writeByte(Markers.DATE)
         this.writeDate(value)
+      } else if (type === Array) {
+        this.byteArr.writeByte(Markers.ARRAY)
+        this.writeArray(value)
       }
     }
   }
@@ -285,6 +363,7 @@ module.exports = class AMF3 {
       case Markers.DOUBLE: return this.byteArr.readDouble()
       case Markers.STRING: return this.readString()
       case Markers.DATE: return this.readDate()
+      case Markers.ARRAY: return this.readArray()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }

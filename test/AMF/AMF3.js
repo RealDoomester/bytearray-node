@@ -81,3 +81,31 @@ it('Can write/read AMF3 dates', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF3 arrays', (tape) => {
+  tape.plan(2)
+
+  const ba = new ByteArray()
+
+  const arr1 = ['A', 'A', 'C']
+  const arr2 = [1, 2, 3, true, 1.2]
+
+  const ref1 = [arr1, arr1]
+  const ref2 = [ref1, arr2, arr2]
+
+  const assocArr1 = Object.assign([], [1, 2, 3])
+  const assocArr2 = Object.assign([], { 'A': 'B' })
+
+  const refAssocArr = Object.assign([], { 'Test': [arr1, arr2, ref1, ref2] })
+  const bigAssocArr = Object.assign([], { 'Test1': assocArr1, 'Test2': assocArr2, 'Test3': [assocArr1, assocArr2, refAssocArr] })
+
+  ba.writeObject(refAssocArr)
+  ba.writeObject(bigAssocArr)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), refAssocArr)
+  tape.deepEqual(ba.readObject(), bigAssocArr)
+
+  tape.end()
+})
