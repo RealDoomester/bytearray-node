@@ -50,3 +50,19 @@ it('Can write/read AMF3 numbers', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF3 strings', (tape) => {
+  tape.plan(2)
+
+  const ba = new ByteArray()
+
+  ba.writeObject('Action Message Format.')
+  ba.writeObject('This is a test.')
+
+  ba.position = 0
+
+  tape.equal(ba.readObject(), 'Action Message Format.')
+  tape.equal(ba.readObject(), 'This is a test.')
+
+  tape.end()
+})

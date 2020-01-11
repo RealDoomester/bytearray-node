@@ -155,13 +155,56 @@ module.exports = class AMF3 {
       return idx
     }
 
-    if (!data || typeof data === 'string' && !data.length) {
+    if (!value || typeof value === 'string' && !value.length) {
       return false
     }
 
     this[table].push(value)
 
     return false
+  }
+
+  /**
+   * Write a string
+   * @param {String} value
+   * @param {Boolean} useType
+   */
+  writeString(value, useType = true) {
+    if (useType) {
+      this.byteArr.writeByte(Markers.STRING)
+    }
+
+    if (value.length === 0) {
+      this.writeUInt29(1)
+    } else {
+      const idx = this.getReference(value, 'stringReferences')
+
+      if (idx !== false) {
+        this.writeUInt29(idx << 1)
+      } else {
+        this.writeUInt29((value.length << 1) | 1)
+        this.byteArr.writeUTFBytes(value)
+      }
+    }
+  }
+
+  /**
+   * Read a string
+   * @returns {String}
+   */
+  readString() {
+    if (this.isReference('stringReferences')) {
+      return this.reference
+    }
+
+    const length = this.flags
+    const value = length > 0 ? this.byteArr.readUTFBytes(length) : ''
+
+    if (length > 0) {
+      this.stringReferences.push(value)
+    }
+
+    return value
   }
 
   /**
@@ -186,6 +229,8 @@ module.exports = class AMF3 {
           this.byteArr.writeByte(Markers.DOUBLE)
           this.byteArr.writeDouble(value)
         }
+      } else if (type === String) {
+        this.writeString(value)
       }
     }
   }
@@ -204,6 +249,7 @@ module.exports = class AMF3 {
       case Markers.FALSE: return false
       case Markers.INT: return this.readUInt29() << 3 >> 3
       case Markers.DOUBLE: return this.byteArr.readDouble()
+      case Markers.STRING: return this.readString()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }
