@@ -4,6 +4,7 @@ const it = require('tape')
 const ByteArray = require('../../src/')
 const ObjectEncoding = require('../../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
+const Unit = require('./unit')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {
   tape.plan(4)
@@ -67,69 +68,61 @@ it('Can write/read AMF0 strings', (tape) => {
 })
 
 it('Can write/read AMF0 objects', (tape) => {
-  tape.plan(5)
+  const samples = Unit.createObjects(5)
+  tape.plan(samples.length)
 
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
-  const obj1 = { id: 1 }
-  const obj2 = { id: 2 }
-
-  const ref1 = { a: obj1, b: obj1 }
-  const ref2 = { a: obj1, b: obj1, c: obj2, d: obj2 }
-
-  const longKey = randomBytes(32768).toString('hex')
-  const longString = randomBytes(32768).toString('hex')
-  const longObj = { longKey: longString }
-
-  ba.writeObject(obj1)
-  ba.writeObject(obj2)
-  ba.writeObject(ref1)
-  ba.writeObject(ref2)
-  ba.writeObject(longObj)
+  for (let i in samples) {
+    ba.writeObject(samples[i])
+  }
 
   ba.position = 0
 
-  tape.deepEqual(ba.readObject(), obj1)
-  tape.deepEqual(ba.readObject(), obj2)
-  tape.deepEqual(ba.readObject(), ref1)
-  tape.deepEqual(ba.readObject(), ref2)
-  tape.deepEqual(ba.readObject(), longObj)
+  for (let i in samples) {
+    tape.deepEqual(ba.readObject(), samples[i])
+  }
 
   tape.end()
 })
 
 it('Can write/read AMF0 arrays', (tape) => {
-  tape.plan(4)
+  const samples = Unit.createArrays(5)
+  tape.plan(samples.length)
 
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
 
-  const obj1 = { id: 1 }
-  const obj2 = { id: 2 }
-
-  const ref1 = { a: obj1, b: obj1 }
-  const ref2 = { a: obj1, b: obj1, c: obj2, d: obj2 }
-
-  const denseArr1 = [1, 2, 3]
-
-  const assocArr1 = Object.assign([], { 'Values': [1, 2, 3], 'Test': 'Daan' })
-  const assocArr2 = Object.assign([], { 'A': 'B' })
-
-  const refAssocArr = Object.assign([], { 'Test': [obj1, obj2, ref1, ref2] })
-  const bigAssocArr = Object.assign([], { 'Test1': assocArr1, 'Test2': assocArr2, 'Test3': [assocArr1, assocArr2, refAssocArr] })
-
-  ba.writeObject(denseArr1)
-  ba.writeObject(assocArr1)
-  ba.writeObject(refAssocArr)
-  ba.writeObject(bigAssocArr)
+  for (let i in samples) {
+    ba.writeObject(samples[i])
+  }
 
   ba.position = 0
 
-  tape.deepEqual(ba.readObject(), denseArr1)
-  tape.deepEqual(ba.readObject(), assocArr1)
-  tape.deepEqual(ba.readObject(), refAssocArr)
-  tape.deepEqual(ba.readObject(), bigAssocArr)
+  for (let i in samples) {
+    tape.deepEqual(ba.readObject(), samples[i])
+  }
+
+  tape.end()
+})
+
+it('Can write/read AMF0 associative arrays', (tape) => {
+  const samples = Unit.createAssocArrays(5)
+  tape.plan(samples.length)
+
+  const ba = new ByteArray()
+  ba.objectEncoding = ObjectEncoding.AMF0
+
+  for (let i in samples) {
+    ba.writeObject(samples[i])
+  }
+
+  ba.position = 0
+
+  for (let i in samples) {
+    tape.deepEqual(ba.readObject(), samples[i])
+  }
 
   tape.end()
 })
@@ -166,8 +159,8 @@ it('Can write/read AMF0 typed objects', (tape) => {
 
   ByteArray.registerClassAlias('com.person', Person)
 
-  tape.ok(!!ByteArray.classMapping[Person])
-  tape.ok(!!ByteArray.aliasMapping['com.person'])
+  tape.equal(ByteArray.classMapping[Person], 'com.person')
+  tape.equal(ByteArray.aliasMapping['com.person'], Person)
 
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
@@ -209,7 +202,7 @@ it('Can write/read AMF0 anonymous typed objects', (tape) => {
 
   const obj = ba.readObject()
 
-  tape.ok(obj.constructor === Object)
+  tape.equal(obj.constructor, Object)
   tape.deepEqual(obj, person)
 
   tape.end()
