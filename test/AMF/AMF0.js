@@ -190,3 +190,27 @@ it('Can write/read AMF0 typed objects', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF0 anonymous typed objects', (tape) => {
+  tape.plan(2)
+
+  class Person {
+    constructor(name) {
+      this.name = name
+    }
+  }
+
+  const ba = new ByteArray()
+  const person = new Person('Daan')
+
+  ba.objectEncoding = ObjectEncoding.AMF0
+  ba.writeObject(person)
+  ba.position = 0
+
+  const obj = ba.readObject()
+
+  tape.ok(obj.constructor === Object)
+  tape.deepEqual(obj, person)
+
+  tape.end()
+})

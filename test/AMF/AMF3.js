@@ -24,7 +24,7 @@ it('Can write/read AMF3 values representing their marker', (tape) => {
 })
 
 it('Can write/read AMF3 numbers', (tape) => {
-  tape.plan(8)
+  tape.plan(6)
 
   const ba = new ByteArray()
 
@@ -34,7 +34,6 @@ it('Can write/read AMF3 numbers', (tape) => {
   ba.writeObject(1.23)
   ba.writeObject(268435455)
   ba.writeObject(-268435456)
-  ba.writeObject(268435456)
 
   ba.position = 0
 
@@ -44,9 +43,6 @@ it('Can write/read AMF3 numbers', (tape) => {
   tape.equal(ba.readObject(), 1.23)
   tape.equal(ba.readObject(), 268435455)
   tape.equal(ba.readObject(), -268435456)
-  tape.equal(ba.readByte(), 5)
-  ba.position--
-  tape.equal(ba.readObject(), 268435456)
 
   tape.end()
 })

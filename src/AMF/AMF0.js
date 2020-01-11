@@ -285,8 +285,10 @@ module.exports = class AMF0 {
         this.writeDate(value)
       } else if (this.byteArr.classMapping[type]) {
         this.writeTypedObject(value)
+      } else if (typeof value === 'object') {
+        this.write(Object.assign({}, value))
       } else {
-        throw new Error(`Unknown value type: '${type}'.`)
+        throw new Error(`Unknown value type: '${type.name}'.`)
       }
     }
   }
