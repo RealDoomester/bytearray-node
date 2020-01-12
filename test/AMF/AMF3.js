@@ -2,6 +2,7 @@
 
 const it = require('tape')
 const ByteArray = require('../../src/')
+const IExternalizable = require('../../enums/IExternalizable')
 
 it('Can write/read AMF3 values representing their marker', (tape) => {
   tape.plan(4)
@@ -102,6 +103,89 @@ it('Can write/read AMF3 arrays', (tape) => {
 
   tape.deepEqual(ba.readObject(), refAssocArr)
   tape.deepEqual(ba.readObject(), bigAssocArr)
+
+  tape.end()
+})
+
+it('Can write/read AMF3 objects', (tape) => {
+  const ba = new ByteArray()
+
+  ba.writeObject({ name: 'Daan' })
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), { name: 'Daan' })
+
+  tape.end()
+})
+
+it('Can write/read AMF3 anonymous typed objects', (tape) => {
+  class Person {
+    constructor(name) {
+      this.name = name
+    }
+  }
+
+  const ba = new ByteArray()
+  const person = new Person('Daan')
+
+  ba.writeObject(person)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), { name: 'Daan' })
+
+  tape.end()
+})
+
+it('Can write/read AMF3 typed objects', (tape) => {
+  class Person {
+    constructor(name) {
+      this.name = name
+    }
+  }
+
+  ByteArray.registerClassAlias('src.person', Person)
+
+  const ba = new ByteArray()
+  const person = new Person('Daan')
+
+  ba.writeObject(person)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), { name: 'Daan' })
+
+  tape.end()
+})
+
+it('Can write/read AMF3 IExternalizable objects', (tape) => {
+  class Person extends IExternalizable {
+    constructor(name) {
+      super()
+
+      this.name = name
+    }
+
+    writeExternal(ba) {
+      ba.writeUTF(this.name)
+    }
+
+    readExternal(ba) {
+      this.name = ba.readUTF()
+    }
+  }
+
+  ByteArray.registerClassAlias('src.person', Person)
+
+  const ba = new ByteArray()
+  const person = new Person('Daan')
+
+  ba.writeObject(person)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), { name: 'Daan' })
 
   tape.end()
 })

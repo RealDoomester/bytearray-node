@@ -17,9 +17,9 @@ const ByteArray = require('bytearray-node')
 const Endian = require('bytearray-node/enums/Endian')
 const ObjectEncoding = require('bytearray-node/enums/ObjectEncoding')
 const CompressionAlgorithm = require('bytearray-node/enums/CompressionAlgorithm')
-const IExternalizable = require('bytearray-node/enums/IExternalizable')
 
 const ba = new ByteArray()
+
 //ba.endian = Endian.BIG_ENDIAN
 //ba.endian = Endian.LITTLE_ENDIAN
 
@@ -37,4 +37,36 @@ ba.position = 0
 
 console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
+```
+
+# AMF example
+
+```javascript
+const ByteArray = require('bytearray-node')
+const IExternalizable = require('bytearray-node/enums/IExternalizable')
+
+class Person extends IExternalizable {
+  constructor(name) {
+    this.name = name
+  }
+
+  writeExternal(ba) {
+    ba.writeUTF(this.name)
+  }
+
+  readExternal(ba) {
+    this.name = ba.readUTF()
+  }
+}
+
+ByteArray.registerClassAlias('src.person', Person)
+
+const ba = new ByteArray()
+const person = new Person('Daan')
+
+ba.writeObject(person)
+
+ba.position = 0
+
+console.log(ba.readObject()) // Person { name: 'Daan' }
 ```

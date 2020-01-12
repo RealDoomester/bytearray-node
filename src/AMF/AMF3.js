@@ -1,5 +1,7 @@
 'use strict'
 
+const { isImplementedBy } = require('../../enums/IExternalizable')
+
 /**
  * The AMF3 markers
  * @constant
@@ -105,14 +107,14 @@ module.exports = class AMF3 {
 
   /**
    * Pops a flag, used for knowing what the remaining bits are
-   * @returns {Number}
+   * @returns {Boolean}
    */
   popFlag() {
     const ref = this.flags & 1
 
     this.flags >>= 1
 
-    return ref
+    return Boolean(ref)
   }
 
   /**
@@ -304,6 +306,144 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write an object
+   * @param {Object} value
+   * @param {Boolean} isAnonymousObject
+   */
+  writeObject(value, isAnonymousObject = false) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      const traits = this.writeTraits(value, isAnonymousObject)
+
+      if (traits.isExternallySerialized) {
+        if (value.writeExternal.length !== 1) {
+          throw new Error(`Expecting only 1 argument for writeExternal in registered class: '${traits.className}'`)
+        }
+
+        value.writeExternal(this.byteArr)
+      } else {
+        if (traits.isDynamicObject) {
+          for (const key in value) {
+            this.writeString(key, false)
+            this.write(value[key])
+          }
+
+          this.writeUInt29(1)
+        } else {
+          for (let i = 0; i < traits.sealedMemberCount; i++) {
+            this.writeString(traits.sealedMemberNames[i], false)
+
+            if (!traits.isDynamicObject) {
+              this.write(value[traits.sealedMemberNames[i]])
+            }
+          }
+
+          if (traits.isDynamicObject) {
+            for (let i = 0; i < traits.sealedMemberCount; i++) {
+              this.write(value[traits.sealedMemberNames[i]])
+            }
+          } else {
+            this.writeUInt29(1)
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Write object traits
+   * @param {Object} value
+   * @param {Boolean} isAnonymousObject
+   * @returns {Object}
+   */
+  writeTraits(value, isAnonymousObject) {
+    const className = value.constructor === Object || isAnonymousObject ? '' : this.byteArr.classMapping[value.constructor]
+    const isExternallySerialized = isImplementedBy(value)
+    const isDynamicObject = className === '' && !isAnonymousObject
+    const sealedMemberNames = isDynamicObject || isExternallySerialized ? [] : Object.keys(value)
+    const sealedMemberCount = sealedMemberNames.length
+
+    const traits = { isExternallySerialized, isDynamicObject, sealedMemberCount, className, sealedMemberNames }
+    const idx = this.getReference(traits, 'traitReferences')
+
+    if (idx !== false) {
+      this.writeUInt29((idx << 2) | 1)
+    } else {
+      this.writeUInt29(3 | (isExternallySerialized ? 4 : 0) | (isDynamicObject ? 8 : 0) | (sealedMemberCount << 4))
+      this.writeString(className, false)
+    }
+
+    return traits
+  }
+
+  /**
+   * Read an object
+   * @returns {Object}
+   */
+  readObject() {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    let instance = {}
+    let traits
+
+    this.objectReferences.push(instance)
+
+    if (this.isReference('traitReferences')) {
+      traits = this.reference
+    } else {
+      traits = {
+        isExternallySerialized: this.popFlag(),
+        isDynamicObject: this.popFlag(),
+        sealedMemberCount: this.flags,
+        className: this.readString(),
+        sealedMemberNames: []
+      }
+
+      this.traitReferences.push(traits)
+
+      if (traits.isExternallySerialized && traits.className !== '') {
+        instance = new (this.byteArr.aliasMapping[traits.className])()
+
+        if (instance.readExternal.length !== 1) {
+          throw new Error(`Expecting only 1 argument for readExternal in registered class: '${traits.className}'`)
+        }
+
+        instance.readExternal(this.byteArr)
+      }
+
+      for (let i = 0; i < traits.sealedMemberCount; i++) {
+        traits.sealedMemberNames[i] = this.readString()
+      }
+    }
+
+    for (let i = 0; i < traits.sealedMemberCount; i++) {
+      instance[traits.sealedMemberNames[i]] = this.read()
+    }
+
+    if (traits.isDynamicObject) {
+      for (let key = this.readString(); key !== ''; instance[key] = this.read(), key = this.readString()) { }
+    }
+
+    if (!traits.isExternallySerialized && !traits.isDynamicObject && traits.className !== '') {
+      const classObject = new (this.byteArr.aliasMapping[traits.className])()
+      const values = Object.values(instance)
+
+      for (let i = 0; i < traits.sealedMemberCount; i++) {
+        classObject[traits.sealedMemberNames[i]] = values[i]
+      }
+
+      return classObject
+    }
+
+    return instance
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -333,6 +473,14 @@ module.exports = class AMF3 {
       } else if (type === Array) {
         this.byteArr.writeByte(Markers.ARRAY)
         this.writeArray(value)
+      } else if (type === Object || this.byteArr.classMapping[type]) {
+        this.byteArr.writeByte(Markers.OBJECT)
+        this.writeObject(value)
+      } else if (typeof value === 'object') {
+        this.byteArr.writeByte(Markers.OBJECT)
+        this.writeObject(Object.assign({}, value), true)
+      } else {
+        throw new Error(`Unknown value type: '${type.name}'.`)
       }
     }
   }
@@ -354,6 +502,7 @@ module.exports = class AMF3 {
       case Markers.STRING: return this.readString()
       case Markers.DATE: return this.readDate()
       case Markers.ARRAY: return this.readArray()
+      case Markers.OBJECT: return this.readObject()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }
