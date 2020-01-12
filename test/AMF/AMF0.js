@@ -4,6 +4,7 @@ const it = require('tape')
 const ByteArray = require('../../src/')
 const ObjectEncoding = require('../../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
+const Unit = require('./unit')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {
   tape.plan(4)
@@ -211,6 +212,26 @@ it('Can write/read AMF0 anonymous typed objects', (tape) => {
 
   tape.equal(obj.constructor, Object)
   tape.deepEqual(obj, person)
+
+  tape.end()
+})
+
+it('Passes the AMF0 object stress test', (tape) => {
+  const samples = Unit.create_random_objects(10, 15)
+  tape.plan(samples.length)
+
+  const ba = new ByteArray()
+  ba.objectEncoding = ObjectEncoding.AMF0
+
+  for (const i in samples) {
+    ba.writeObject(samples[i])
+  }
+
+  ba.position = 0
+
+  for (const i in samples) {
+    tape.deepEqual(ba.readObject(), samples[i])
+  }
 
   tape.end()
 })

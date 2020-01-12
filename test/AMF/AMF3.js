@@ -3,6 +3,7 @@
 const it = require('tape')
 const ByteArray = require('../../src/')
 const IExternalizable = require('../../enums/IExternalizable')
+const Unit = require('./unit')
 
 it('Can write/read AMF3 values representing their marker', (tape) => {
   tape.plan(4)
@@ -186,6 +187,25 @@ it('Can write/read AMF3 IExternalizable objects', (tape) => {
   ba.position = 0
 
   tape.deepEqual(ba.readObject(), { name: 'Daan' })
+
+  tape.end()
+})
+
+it('Passes the AMF3 object stress test', (tape) => {
+  const samples = Unit.create_random_objects(10, 15)
+  tape.plan(samples.length)
+
+  const ba = new ByteArray()
+
+  for (const i in samples) {
+    ba.writeObject(samples[i])
+  }
+
+  ba.position = 0
+
+  for (const i in samples) {
+    tape.deepEqual(ba.readObject(), samples[i])
+  }
 
   tape.end()
 })
