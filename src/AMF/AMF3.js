@@ -149,10 +149,6 @@ module.exports = class AMF3 {
       return idx
     }
 
-    if (!value || typeof value === 'string' && !value.length) {
-      return false
-    }
-
     this[table].push(value)
 
     return false

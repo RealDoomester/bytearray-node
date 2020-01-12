@@ -2,7 +2,6 @@
 
 const it = require('tape')
 const ByteArray = require('../../src/')
-const Unit = require('./unit')
 
 it('Can write/read AMF3 values representing their marker', (tape) => {
   tape.plan(4)
@@ -80,39 +79,29 @@ it('Can write/read AMF3 dates', (tape) => {
 })
 
 it('Can write/read AMF3 arrays', (tape) => {
-  const samples = Unit.createArrays(5)
-  tape.plan(samples.length)
+  tape.plan(2)
 
   const ba = new ByteArray()
 
-  for (let i in samples) {
-    ba.writeObject(samples[i])
-  }
+  const arr1 = ['A', 'A', 'C']
+  const arr2 = [1, 2, 3, true, 1.2]
+
+  const ref1 = [arr1, arr1]
+  const ref2 = [ref1, arr2, arr2]
+
+  const assocArr1 = Object.assign([], [1, 2, 3])
+  const assocArr2 = Object.assign([], { 'A': 'B' })
+
+  const refAssocArr = Object.assign([], { 'Test': [arr1, arr2, ref1, ref2] })
+  const bigAssocArr = Object.assign([], { 'Test1': assocArr1, 'Test2': assocArr2, 'Test3': [assocArr1, assocArr2, refAssocArr] })
+
+  ba.writeObject(refAssocArr)
+  ba.writeObject(bigAssocArr)
 
   ba.position = 0
 
-  for (let i in samples) {
-    tape.deepEqual(ba.readObject(), samples[i])
-  }
-
-  tape.end()
-})
-
-it('Can write/read AMF3 associative arrays', (tape) => {
-  const samples = Unit.createAssocArrays(5)
-  tape.plan(samples.length)
-
-  const ba = new ByteArray()
-
-  for (let i in samples) {
-    ba.writeObject(samples[i])
-  }
-
-  ba.position = 0
-
-  for (let i in samples) {
-    tape.deepEqual(ba.readObject(), samples[i])
-  }
+  tape.deepEqual(ba.readObject(), refAssocArr)
+  tape.deepEqual(ba.readObject(), bigAssocArr)
 
   tape.end()
 })
