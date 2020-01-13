@@ -360,7 +360,7 @@ module.exports = class AMF3 {
    * @returns {Object}
    */
   writeTraits(value, isAnonymousObject) {
-    const className = value.constructor === Object || isAnonymousObject ? '' : this.byteArr.classMapping[value.constructor]
+    const className = value.constructor === Object || isAnonymousObject ? '' : this.byteArr.classMapping.get(value.constructor)
     const isExternallySerialized = isImplementedBy(value)
     const isDynamicObject = className === '' && !isAnonymousObject
     const sealedMemberNames = isDynamicObject || isExternallySerialized ? [] : Object.keys(value)
@@ -473,7 +473,7 @@ module.exports = class AMF3 {
       } else if (type === Array) {
         this.byteArr.writeByte(Markers.ARRAY)
         this.writeArray(value)
-      } else if (type === Object || this.byteArr.classMapping[type]) {
+      } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(value)
       } else if (typeof value === 'object') {

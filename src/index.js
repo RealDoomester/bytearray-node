@@ -30,14 +30,14 @@ const AMF3 = require('./AMF/AMF3')
 module.exports = class ByteArray {
   /**
    * Used to preserve class objects
-   * @type {Object}
+   * @type {WeakMap}
    */
-  static classMapping = {}
+  static classMapping = new WeakMap()
   /**
    * Used to preserve alias strings
    * @type {Object}
    */
-  static aliasMapping = {}
+  static aliasMapping = Object.create(null)
 
   /**
    * @constructor
@@ -101,7 +101,7 @@ module.exports = class ByteArray {
 
   /**
    * Returns the class mapping
-   * @returns {Object}
+   * @returns {WeakMap}
    */
   get classMapping() {
     return ByteArray.classMapping
@@ -129,7 +129,7 @@ module.exports = class ByteArray {
       throw new Error('Missing class object.')
     }
 
-    this.classMapping[classObject] = aliasName
+    this.classMapping.set(classObject, aliasName)
     this.aliasMapping[aliasName] = classObject
   }
 

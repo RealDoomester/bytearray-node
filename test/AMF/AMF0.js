@@ -167,7 +167,7 @@ it('Can write/read AMF0 typed objects', (tape) => {
 
   ByteArray.registerClassAlias('com.person', Person)
 
-  tape.equal(ByteArray.classMapping[Person], 'com.person')
+  tape.equal(ByteArray.classMapping.get(Person), 'com.person')
   tape.equal(ByteArray.aliasMapping['com.person'], Person)
 
   const ba = new ByteArray()

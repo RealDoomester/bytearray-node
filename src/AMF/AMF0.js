@@ -224,7 +224,7 @@ module.exports = class AMF0 {
     }
 
     this.byteArr.writeByte(Markers.TYPED_OBJECT)
-    this.byteArr.writeUTF(this.byteArr.classMapping[value.constructor])
+    this.byteArr.writeUTF(this.byteArr.classMapping.get(value.constructor))
 
     for (const key in value) {
       this.writeString(key, false)
@@ -283,7 +283,7 @@ module.exports = class AMF0 {
         this.writeECMAArray(value)
       } else if (type === Date) {
         this.writeDate(value)
-      } else if (this.byteArr.classMapping[type]) {
+      } else if (this.byteArr.classMapping.has(type)) {
         this.writeTypedObject(value)
       } else if (typeof value === 'object') {
         this.write(Object.assign({}, value))
