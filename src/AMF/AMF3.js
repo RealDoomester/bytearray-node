@@ -1,5 +1,6 @@
 'use strict'
 
+const ByteArray = require('bytearray-node')
 const { isImplementedBy } = require('../../enums/IExternalizable')
 
 /**
@@ -16,7 +17,8 @@ const Markers = {
   STRING: 0x06,
   DATE: 0x08,
   ARRAY: 0x09,
-  OBJECT: 0x0A
+  OBJECT: 0x0A,
+  BYTEARRAY: 0x0C
 }
 
 /**
@@ -444,6 +446,40 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write a ByteArray
+   * @param {ByteArray} value
+   */
+  writeByteArray(value) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      this.writeUInt29((value.length << 1) | 1)
+      this.byteArr.buffer = Buffer.concat([this.byteArr.buffer, value.buffer])
+      this.byteArr.position += value.length
+      this.writeUInt29(1)
+    }
+  }
+
+  /**
+   * Read a ByteArray
+   * @returns {ByteArray}
+   */
+  readByteArray() {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    const value = new ByteArray()
+
+    this.objectReferences.push(value)
+    this.byteArr.readBytes(value, 0, this.flags)
+
+    return value
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -473,6 +509,9 @@ module.exports = class AMF3 {
       } else if (type === Array) {
         this.byteArr.writeByte(Markers.ARRAY)
         this.writeArray(value)
+      } else if (type.name === 'ByteArray') {
+        this.byteArr.writeByte(Markers.BYTEARRAY)
+        this.writeByteArray(value)
       } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(value)
@@ -503,6 +542,7 @@ module.exports = class AMF3 {
       case Markers.DATE: return this.readDate()
       case Markers.ARRAY: return this.readArray()
       case Markers.OBJECT: return this.readObject()
+      case Markers.BYTEARRAY: return this.readByteArray()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }
