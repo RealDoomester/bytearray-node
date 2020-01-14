@@ -11,7 +11,7 @@ exports.random_string = function random_string(length) {
   let str = ''
 
   for (let i = 0; i < length; i++) {
-    const num = Math.floor(Math.random() * set.length)
+    const num = Math.floor(Math.random() * 52)
     str += set.substring(num, num + 1)
   }
 
@@ -43,12 +43,12 @@ exports.create_random_objects = function create_random_objects(object_count, val
     const object = {}
 
     for (let i = 0; i < value_count; i++) {
-      const p1 = exports.random_string(exports.random_int(1, 100))
-      const p2 = Boolean(exports.random_int(0, 1))
-      const p3 = exports.random_int(0, exports.random_int(0, 100))
-      const p4 = exports.random_string(exports.random_int(1, 100))
+      const random_key = exports.random_string(exports.random_int(1, 100))
+      const string_or_number = Boolean(exports.random_int(0, 1))
+      const random_number = exports.random_int(0, exports.random_int(0, 100))
+      const random_string = exports.random_string(exports.random_int(1, 100))
 
-      object[p1] = p2 ? p3 : p4
+      object[random_key] = string_or_number ? random_number : random_string
     }
 
     objects[i] = object
