@@ -18,7 +18,8 @@ const Markers = {
   DATE: 0x08,
   ARRAY: 0x09,
   OBJECT: 0x0A,
-  BYTEARRAY: 0x0C
+  BYTEARRAY: 0x0C,
+  DICTIONARY: 0x11
 }
 
 /**
@@ -480,6 +481,48 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write a dictionary
+   * @param {Map} value
+   */
+  writeDictionary(value) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      this.writeUInt29((value.size << 1) | 1)
+      this.byteArr.writeBoolean(false)
+
+      for (const [k, v] of value) {
+        this.write(k)
+        this.write(v)
+      }
+    }
+  }
+
+  /**
+   * Read a dictionary
+   * @returns {Map}
+   */
+  readDictionary() {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    const length = this.flags
+    const value = new Map()
+    this.byteArr.position++
+
+    this.objectReferences.push(value)
+
+    for (let i = 0; i < length; i++) {
+      value.set(this.read(), this.read())
+    }
+
+    return value
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -512,6 +555,9 @@ module.exports = class AMF3 {
       } else if (type.name === 'ByteArray') {
         this.byteArr.writeByte(Markers.BYTEARRAY)
         this.writeByteArray(value)
+      } else if (type === Map) {
+        this.byteArr.writeByte(Markers.DICTIONARY)
+        this.writeDictionary(value)
       } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(value)
@@ -543,6 +589,7 @@ module.exports = class AMF3 {
       case Markers.ARRAY: return this.readArray()
       case Markers.OBJECT: return this.readObject()
       case Markers.BYTEARRAY: return this.readByteArray()
+      case Markers.DICTIONARY: return this.readDictionary()
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }

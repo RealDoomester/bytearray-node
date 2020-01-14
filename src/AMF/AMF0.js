@@ -16,7 +16,8 @@ const Markers = {
   OBJECT_END: 0x09,
   DATE: 0x0B,
   LONG_STRING: 0x0C,
-  TYPED_OBJECT: 0x10
+  TYPED_OBJECT: 0x10,
+  AVMPLUS: 0x11
 }
 
 /**
@@ -258,6 +259,20 @@ module.exports = class AMF0 {
   }
 
   /**
+   * Switches to AMF3
+   * @returns {*}
+   */
+  readAvmPlus() {
+    if (this.byteArr.bytesAvailable >= 2) {
+      this.byteArr.objectEncoding = 3
+
+      return this.byteArr.readObject()
+    } else {
+      throw new RangeError('No AMF3 bytes to read.')
+    }
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -312,6 +327,7 @@ module.exports = class AMF0 {
       case Markers.ECMA_ARRAY: return this.readECMAArray()
       case Markers.DATE: return this.readDate()
       case Markers.TYPED_OBJECT: return this.readTypedObject()
+      case Markers.AVMPLUS: return this.readAvmPlus()
       default: throw new Error(`Unknown or unsupported AMF0 marker: '${marker}'.`)
     }
   }

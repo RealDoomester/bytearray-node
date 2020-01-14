@@ -226,3 +226,22 @@ it('Can write/read AMF3 ByteArrays', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF3 Maps', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const map = new Map()
+
+  map.set('Name', 'Daan')
+  map.set('Array', [1, 2, 3])
+  map.set('Object', { id: 1 })
+
+  ba.writeObject(map)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), map)
+
+  tape.end()
+})

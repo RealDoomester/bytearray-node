@@ -4,6 +4,8 @@
 
 A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
+**XML, Vectors and weak dictionary is not supported.**
+
 # Installation
 
 `npm install bytearray-node`
@@ -39,7 +41,7 @@ console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
 ```
 
-# AMF example
+# AMF IExternalizable example
 
 ```javascript
 const ByteArray = require('bytearray-node')
