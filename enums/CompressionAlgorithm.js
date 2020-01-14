@@ -3,8 +3,4 @@
 /**
  * @exports
  */
-module.exports = {
-  DEFLATE: 'deflate',
-  LZMA: 'lzma',
-  ZLIB: 'zlib'
-}
+module.exports = { DEFLATE: 'deflate', LZMA: 'lzma', ZLIB: 'zlib' }
