@@ -227,7 +227,7 @@ it('Can write/read AMF3 ByteArrays', (tape) => {
   tape.end()
 })
 
-it('Can write/read AMF3 Maps', (tape) => {
+it('Can write/read AMF3 Maps (Dictionary)', (tape) => {
   tape.plan(1)
 
   const ba = new ByteArray()

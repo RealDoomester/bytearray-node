@@ -2,6 +2,7 @@
 
 const ByteArray = require('bytearray-node')
 const { isImplementedBy } = require('../../enums/IExternalizable')
+const hash = require('object-hash')
 
 /**
  * The AMF3 markers
@@ -49,17 +50,17 @@ module.exports = class AMF3 {
     this.reference = null
     /**
      * The array of string references
-     * @type {Array<String>}
+     * @type {Array}
      */
     this.stringReferences = []
     /**
      * The array of object references
-     * @type {Array<Object>}
+     * @type {Array}
      */
     this.objectReferences = []
     /**
      * The array of trait references
-     * @type {Array<Object>}
+     * @type {Array}
      */
     this.traitReferences = []
   }
@@ -370,7 +371,7 @@ module.exports = class AMF3 {
     const sealedMemberCount = sealedMemberNames.length
 
     const traits = { isExternallySerialized, isDynamicObject, sealedMemberCount, className, sealedMemberNames }
-    const idx = this.getReference(traits, 'traitReferences')
+    const idx = this.getReference(hash(traits), 'traitReferences')
 
     if (idx !== false) {
       this.writeUInt29((idx << 2) | 1)
