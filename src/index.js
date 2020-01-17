@@ -75,6 +75,14 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Override for Object.prototype.toString.call
+   * @returns {String}
+   */
+  get [Symbol.toStringTag]() {
+    return 'ByteArray'
+  }
+
+  /**
    * Sets the length of the buffer
    * @param {Number} value
    */

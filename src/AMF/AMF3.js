@@ -153,11 +153,11 @@ module.exports = class AMF3 {
 
     if (idx >= 0) {
       return idx
+    } else {
+      this[table].push(value)
+
+      return false
     }
-
-    this[table].push(value)
-
-    return false
   }
 
   /**

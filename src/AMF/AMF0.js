@@ -37,7 +37,7 @@ module.exports = class AMF0 {
     this.byteArr = byteArr
     /**
      * The array of object references
-     * @type {Array<Object>}
+     * @type {Array}
      */
     this.references = []
   }
@@ -52,11 +52,11 @@ module.exports = class AMF0 {
 
     if (idx >= 0) {
       return idx
+    } else {
+      this.references.push(value)
+
+      return false
     }
-
-    this.references.push(value)
-
-    return false
   }
 
   /**
