@@ -4,7 +4,7 @@
 
 A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
-**XML, Vectors and weak dictionary is not supported.**
+**XML, Vectors and weak dictionary types are not supported.**
 
 # Installation
 
@@ -24,6 +24,7 @@ const ba = new ByteArray()
 
 //ba.endian = Endian.BIG_ENDIAN
 //ba.endian = Endian.LITTLE_ENDIAN
+//ba.endian = Endian.SYSTEM
 
 //ba.objectEncoding = ObjectEncoding.AMF0
 //ba.objectEncoding = ObjectEncoding.AMF3
