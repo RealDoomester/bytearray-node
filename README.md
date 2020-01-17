@@ -1,6 +1,7 @@
 # ByteArray-node
 
 [![npm version](https://img.shields.io/npm/v/bytearray-node?style=flat-square)](https://www.npmjs.com/package/bytearray-node)
+[![Dependencies](https://img.shields.io/david/Zaseth/bytearray-node)](https://www.npmjs.com/package/bytearray-node?activeTab=dependencies)
 
 A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 

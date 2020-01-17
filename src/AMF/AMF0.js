@@ -263,7 +263,7 @@ module.exports = class AMF0 {
    * @returns {*}
    */
   readAvmPlus() {
-    if (this.byteArr.bytesAvailable >= 2) {
+    if (this.byteArr.bytesAvailable >= 1) {
       this.byteArr.objectEncoding = 3
 
       return this.byteArr.readObject()
