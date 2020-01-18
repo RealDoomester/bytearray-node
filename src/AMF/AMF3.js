@@ -551,7 +551,7 @@ module.exports = class AMF3 {
       if (type === Boolean) {
         this.byteArr.writeByte(value ? Markers.TRUE : Markers.FALSE)
       } else if (type === Number) {
-        if (value << 3 >> 3 === value) {
+        if (Util.isUInt29(value)) {
           this.byteArr.writeByte(Markers.INT)
           this.writeUInt29(value & 0x1FFFFFFF)
         } else {
