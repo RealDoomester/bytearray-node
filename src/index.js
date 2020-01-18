@@ -124,7 +124,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Preserves the class (type) of an object when the object is encoded in Action Message Format (AMF).
+   * Preserves the class (type) of an object when the object is encoded in AMF
    * @param {String} aliasName
    * @param {Object} classObject
    */
@@ -149,7 +149,9 @@ module.exports = class ByteArray {
    */
   readBufferFunc(func, pos) {
     const value = this.buffer[func + this.endian](this.position)
+
     this.position += pos
+
     return value
   }
 
@@ -161,6 +163,7 @@ module.exports = class ByteArray {
    */
   writeBufferFunc(value, func, pos) {
     this.expand(pos)
+
     this.buffer[func + this.endian](value, this.position)
     this.position += pos
   }

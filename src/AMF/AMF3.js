@@ -21,7 +21,11 @@ const Markers = {
   ARRAY: 0x09,
   OBJECT: 0x0A,
   BYTEARRAY: 0x0C,
-  DICTIONARY: 0x11
+  DICTIONARY: 0x11,
+  VECTOR_INT: 0x0D,
+  VECTOR_UINT: 0x0E,
+  VECTOR_DOUBLE: 0x0F,
+  VECTOR_OBJECT: 0x10
 }
 
 /**
@@ -521,8 +525,8 @@ module.exports = class AMF3 {
 
     const length = this.flags
     const value = new Map()
-    this.byteArr.position++
 
+    this.byteArr.position++
     this.objectReferences.push(value)
 
     for (let i = 0; i < length; i++) {
