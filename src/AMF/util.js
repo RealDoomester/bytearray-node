@@ -22,9 +22,7 @@ exports.isUInt29 = (int) => int << 3 >> 3 === int
  * @param {Object} vec
  * @returns {String}
  */
-exports.getVectorType = (vec) => {
-  return Object.prototype.toString.call(vec).split(' ')[1].slice(0, -1)
-}
+exports.getVectorType = (vec) => Object.prototype.toString.call(vec).split(' ')[1].slice(0, -1)
 
 /**
  * @exports
@@ -32,9 +30,7 @@ exports.getVectorType = (vec) => {
  * @param {Object} vec
  * @returns {String}
  */
-exports.getVectorMarkerKey = (vec) => {
-  return exports.getVectorType(vec).toUpperCase().replace('.', '_')
-}
+exports.getVectorMarkerKey = (vec) => exports.getVectorType(vec).toUpperCase().replace('.', '_')
 
 /**
  * @exports
@@ -42,8 +38,4 @@ exports.getVectorMarkerKey = (vec) => {
  * @param {Object} obj
  * @returns {Boolean}
  */
-exports.isVector = (obj) => {
-  return [
-    'Vector.int', 'Vector.uint', 'Vector.double', 'Vector.object'
-  ].indexOf(exports.getVectorType(obj)) !== -1
-}
+exports.isVector = (obj) => ['Vector.int', 'Vector.uint', 'Vector.double', 'Vector.object'].indexOf(exports.getVectorType(obj)) !== -1
