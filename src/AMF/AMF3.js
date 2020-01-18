@@ -1,6 +1,7 @@
 'use strict'
 
 const ByteArray = require('bytearray-node')
+const Helper = require('./Helper')
 const { isImplementedBy } = require('../../enums/IExternalizable')
 const hash = require('object-hash')
 
@@ -130,7 +131,13 @@ module.exports = class AMF3 {
     this.reference = null
 
     if (table !== 'traitReferences') {
-      this.flags = this.readUInt29()
+      const bits = this.readUInt29()
+
+      if (Helper.isUInt29(bits)) {
+        this.flags = bits
+      } else {
+        throw new RangeError(`The value: '${bits}' is out of range for uint29.`)
+      }
     }
 
     const isReference = !this.popFlag()
@@ -244,7 +251,7 @@ module.exports = class AMF3 {
     if (idx !== false) {
       this.writeUInt29(idx << 1)
     } else {
-      if (Object.keys(value).length === value.length) {
+      if (Helper.isDenseArray(value)) {
         this.writeUInt29((value.length << 1) | 1)
         this.writeUInt29(1)
 
@@ -458,8 +465,10 @@ module.exports = class AMF3 {
       this.writeUInt29(idx << 1)
     } else {
       this.writeUInt29((value.length << 1) | 1)
+
       this.byteArr.buffer = Buffer.concat([this.byteArr.buffer, value.buffer])
       this.byteArr.position += value.length
+
       this.writeUInt29(1)
     }
   }
