@@ -38,36 +38,6 @@ exports.getVectorMarkerKey = (vec) => {
 
 /**
  * @exports
- * Returns the write key of the given Vector
- * @param {Object} vec
- * @returns {String}
- */
-exports.getVectorWriteKey = (vec) => {
-  return {
-    'Vector.int': 'byteArr.writeInt',
-    'Vector.uint': 'byteArr.writeUnsignedInt',
-    'Vector.double': 'byteArr.writeDouble',
-    'Vector.object': 'write'
-  }[exports.getVectorType(vec)]
-}
-
-/**
- * @exports
- * Returns the read key of the given Vector
- * @param {Object} vec
- * @returns {String}
- */
-exports.getVectorReadKey = (vec) => {
-  return {
-    'Vector.int': 'byteArr.readInt',
-    'Vector.uint': 'byteArr.readUnsignedInt',
-    'Vector.double': 'byteArr.readDouble',
-    'Vector.object': 'read'
-  }[exports.getVectorType(vec)]
-}
-
-/**
- * @exports
  * Returns whether the given object is a Vector or not
  * @param {Object} obj
  * @returns {Boolean}
