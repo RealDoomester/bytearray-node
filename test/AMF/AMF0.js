@@ -1,9 +1,18 @@
 'use strict'
 
+/**
+ * Our dependencies
+ * @constant
+ */
 const it = require('tape')
 const ByteArray = require('../../src/')
-const ObjectEncoding = require('../../enums/ObjectEncoding')
 const { randomBytes } = require('crypto')
+
+/**
+ * Our enums
+ * @constant
+ */
+const ObjectEncoding = require('../../enums/ObjectEncoding')
 const Unit = require('./unit')
 
 it('Can write/read AMF0 values representing their marker', (tape) => {

@@ -1,7 +1,16 @@
 'use strict'
 
+/**
+ * Our dependencies
+ * @constant
+ */
 const it = require('tape')
 const ByteArray = require('../src/')
+
+/**
+ * Our enums
+ * @constant
+ */
 const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 

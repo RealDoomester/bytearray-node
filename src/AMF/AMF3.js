@@ -1,9 +1,18 @@
 'use strict'
 
+/**
+ * Our dependencies
+ * @constant
+ */
 const ByteArray = require('bytearray-node')
+const hash = require('object-hash')
+
+/**
+ * Our enums
+ * @constant
+ */
 const Util = require('./util')
 const { isImplementedBy } = require('../../enums/IExternalizable')
-const hash = require('object-hash')
 
 /**
  * The AMF3 markers
@@ -43,12 +52,12 @@ module.exports = class AMF3 {
      */
     this.byteArr = byteArr
     /**
-     * The flags
+     * The flags, used for length
      * @type {Number}
      */
     this.flags = 0
     /**
-     * The reference
+     * The reference, used to return the referenceable value
      * @type {*}
      */
     this.reference = null

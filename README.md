@@ -7,7 +7,7 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 **XML, Vector.object and weak dictionary types are not supported.**
 
-**Dictionaries are Maps, Vectors are typed arrays that you can only make fixed by using Object.seal.**
+**Dictionaries are Maps and Vectors are typed arrays that you can only make fixed by using Object.seal.**
 
 # Installation
 
