@@ -21,7 +21,10 @@ const Markers = {
   ARRAY: 0x09,
   OBJECT: 0x0A,
   BYTEARRAY: 0x0C,
-  DICTIONARY: 0x11
+  DICTIONARY: 0x11,
+  VECTOR_INT: 0x0D,
+  VECTOR_UINT: 0x0E,
+  VECTOR_DOUBLE: 0x0F
 }
 
 /**
@@ -533,6 +536,46 @@ module.exports = class AMF3 {
   }
 
   /**
+   * Write a Vector
+   * @param {Object} value
+   */
+  writeVector(value) {
+    const idx = this.getReference(value, 'objectReferences')
+
+    if (idx !== false) {
+      this.writeUInt29(idx << 1)
+    } else {
+      this.writeUInt29((value.length << 1) | 1)
+      this.byteArr.writeBoolean(Object.isSealed(value))
+
+      for (let i = 0; i < value.length; i++) {
+        this.byteArr[Util.getTypedWriteFunc(value.constructor)](value[i])
+      }
+    }
+  }
+
+  /**
+   * Read a Vector
+   * @param {String} type
+   * @returns {Object}
+   */
+  readVector(type) {
+    if (this.isReference('objectReferences')) {
+      return this.reference
+    }
+
+    const length = this.flags
+    const sealed = this.byteArr.readBoolean()
+    const value = Util.getTypedConstruct(type, length)
+
+    for (let i = 0; i < length; i++) {
+      value[i] = this.byteArr[Util.getTypedReadFunc(value.constructor)]()
+    }
+
+    return sealed ? Object.seal(value) : value
+  }
+
+  /**
    * Write a value
    * @param {*} value
    */
@@ -568,6 +611,9 @@ module.exports = class AMF3 {
       } else if (type === Map) {
         this.byteArr.writeByte(Markers.DICTIONARY)
         this.writeDictionary(value)
+      } else if (Util.isVectorLike(type)) {
+        this.byteArr.writeByte(Markers[Util.getTypedMarkerKey(type)])
+        this.writeVector(value)
       } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(value)
@@ -600,6 +646,9 @@ module.exports = class AMF3 {
       case Markers.OBJECT: return this.readObject()
       case Markers.BYTEARRAY: return this.readByteArray()
       case Markers.DICTIONARY: return this.readDictionary()
+      case Markers.VECTOR_INT: return this.readVector('int')
+      case Markers.VECTOR_UINT: return this.readVector('uint')
+      case Markers.VECTOR_DOUBLE: return this.readVector('double')
       default: throw new Error(`Unknown or unsupported AMF3 marker: '${marker}'.`)
     }
   }

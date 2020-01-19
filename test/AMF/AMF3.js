@@ -245,3 +245,52 @@ it('Can write/read AMF3 Maps (Dictionary)', (tape) => {
 
   tape.end()
 })
+
+it('Can write/read AMF3 typed arrays (Vector)', (tape) => {
+  tape.plan(9)
+
+  const ba = new ByteArray()
+
+  const normal_int_arr = new Int32Array([1, 2, 3])
+  const fixed_int_arr = Object.seal(new Int32Array([4, 5, 6]))
+
+  const normal_uint_arr = new Uint32Array([1, 2, 3])
+  const fixed_uint_arr = Object.seal(new Uint32Array([4, 5, 6]))
+
+  const normal_double_arr = new Float64Array([1.1, 2.2, 3.3])
+  const fixed_double_arr = Object.seal(new Float64Array([4.4, 5.5, 6.6]))
+
+  ba.writeObject(normal_int_arr)
+  ba.writeObject(fixed_int_arr)
+
+  ba.writeObject(normal_uint_arr)
+  ba.writeObject(fixed_uint_arr)
+
+  ba.writeObject(normal_double_arr)
+  ba.writeObject(fixed_double_arr)
+
+  ba.position = 0
+
+  const read_normal_int_arr = ba.readObject()
+  const read_fixed_int_arr = ba.readObject()
+
+  const read_normal_uint_arr = ba.readObject()
+  const read_fixed_uint_arr = ba.readObject()
+
+  const read_normal_double_arr = ba.readObject()
+  const read_fixed_double_arr = ba.readObject()
+
+  tape.deepEqual(read_normal_int_arr, normal_int_arr)
+  tape.deepEqual(read_fixed_int_arr, fixed_int_arr)
+  tape.ok(Object.isSealed(read_fixed_int_arr))
+
+  tape.deepEqual(read_normal_uint_arr, normal_uint_arr)
+  tape.deepEqual(read_fixed_uint_arr, fixed_uint_arr)
+  tape.ok(Object.isSealed(read_fixed_uint_arr))
+
+  tape.deepEqual(read_normal_double_arr, normal_double_arr)
+  tape.deepEqual(read_fixed_double_arr, fixed_double_arr)
+  tape.ok(Object.isSealed(read_fixed_double_arr))
+
+  tape.end()
+})
