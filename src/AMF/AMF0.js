@@ -14,6 +14,7 @@ const Markers = {
   REFERENCE: 0x07,
   ECMA_ARRAY: 0x08,
   OBJECT_END: 0x09,
+  STRICT_ARRAY: 0x0A,
   DATE: 0x0B,
   LONG_STRING: 0x0C,
   TYPED_OBJECT: 0x10,
@@ -185,6 +186,23 @@ module.exports = class AMF0 {
   }
 
   /**
+   * Read a strict array, which is used for AMF remoting
+   * @returns {Array}
+   */
+  readStrictArray() {
+    const value = []
+    const length = this.byteArr.readUnsignedInt()
+
+    this.references.push(value)
+
+    for (let i = 0; i < length; i++) {
+      value[i] = this.read()
+    }
+
+    return value
+  }
+
+  /**
    * Write a date
    * @param {Date} value
    */
@@ -325,6 +343,7 @@ module.exports = class AMF0 {
       case Markers.REFERENCE: return this.references[this.byteArr.readUnsignedShort()]
       case Markers.OBJECT: return this.readObject()
       case Markers.ECMA_ARRAY: return this.readECMAArray()
+      case Markers.STRICT_ARRAY: return this.readStrictArray()
       case Markers.DATE: return this.readDate()
       case Markers.TYPED_OBJECT: return this.readTypedObject()
       case Markers.AVMPLUS: return this.readAvmPlus()
