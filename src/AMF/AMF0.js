@@ -302,6 +302,8 @@ module.exports = class AMF0 {
         this.writeTypedObject(value)
       } else if (typeof value === 'object') {
         this.write(Object.assign({}, value))
+      } else if (type === BigInt) {
+        this.write(value.toString())
       } else {
         throw new Error(`Unknown value type: '${type.name}'.`)
       }

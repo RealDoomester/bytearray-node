@@ -629,6 +629,8 @@ module.exports = class AMF3 {
       } else if (typeof value === 'object') {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(Object.assign({}, value), true)
+      } else if (type === BigInt) {
+        this.write(value.toString())
       } else {
         throw new Error(`Unknown value type: '${type.name}'.`)
       }

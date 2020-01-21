@@ -76,6 +76,21 @@ it('Can write/read AMF0 strings', (tape) => {
   tape.end()
 })
 
+it('Can write/read BigInt to strings', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  ba.objectEncoding = ObjectEncoding.AMF0
+
+  ba.writeObject(BigInt(1))
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), '1')
+
+  tape.end()
+})
+
 it('Can write/read AMF0 objects', (tape) => {
   tape.plan(5)
 
