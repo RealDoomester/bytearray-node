@@ -76,7 +76,7 @@ it('Can write/read AMF0 strings', (tape) => {
   tape.end()
 })
 
-it('Can write/read BigInt to strings', (tape) => {
+it('Can convert BigInt to string', (tape) => {
   tape.plan(1)
 
   const ba = new ByteArray()
@@ -155,6 +155,23 @@ it('Can write/read AMF0 arrays', (tape) => {
   tape.deepEqual(ba.readObject(), assocArr1)
   tape.deepEqual(ba.readObject(), refAssocArr)
   tape.deepEqual(ba.readObject(), bigAssocArr)
+
+  tape.end()
+})
+
+it('Can write/read AMF0 sets', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  ba.objectEncoding = ObjectEncoding.AMF0
+
+  const set = new Set([1, 2, 3])
+
+  ba.writeObject(set)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), set)
 
   tape.end()
 })

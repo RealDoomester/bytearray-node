@@ -74,7 +74,7 @@ it('Can write/read AMF3 strings', (tape) => {
   tape.end()
 })
 
-it('Can write/read BigInt to strings', (tape) => {
+it('Can convert BigInt to string', (tape) => {
   tape.plan(1)
 
   const ba = new ByteArray()
@@ -250,7 +250,7 @@ it('Can write/read AMF3 ByteArrays', (tape) => {
   tape.end()
 })
 
-it('Can write/read AMF3 Maps (Dictionary)', (tape) => {
+it('Can write/read AMF3 maps (dictionary)', (tape) => {
   tape.plan(1)
 
   const ba = new ByteArray()
@@ -269,7 +269,7 @@ it('Can write/read AMF3 Maps (Dictionary)', (tape) => {
   tape.end()
 })
 
-it('Can write/read AMF3 typed arrays (Vector)', (tape) => {
+it('Can write/read AMF3 typed arrays (vector)', (tape) => {
   tape.plan(9)
 
   const ba = new ByteArray()

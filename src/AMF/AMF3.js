@@ -545,7 +545,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a Vector
+   * Write a vector
    * @param {Object} value
    */
   writeVector(value) {
@@ -564,7 +564,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a Vector
+   * Read a vector
    * @param {String} type
    * @returns {Object}
    */

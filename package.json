@@ -1,6 +1,6 @@
 {
   "name": "bytearray-node",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.",
   "main": "./src/",
   "engines": {

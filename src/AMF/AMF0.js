@@ -16,6 +16,7 @@ const Markers = {
   OBJECT_END: 0x09,
   DATE: 0x0B,
   LONG_STRING: 0x0C,
+  SET: 0x0E,
   TYPED_OBJECT: 0x10,
   AVMPLUS: 0x11
 }
@@ -214,6 +215,48 @@ module.exports = class AMF0 {
   }
 
   /**
+   * Write a set
+   * @param {Set} value
+   */
+  writeSet(value) {
+    const idx = this.getReference(value)
+
+    if (idx !== false) {
+      return this.writeReference(idx)
+    }
+
+    this.byteArr.writeByte(Markers.SET)
+    this.byteArr.writeUnsignedInt(value.size)
+
+    for (const element of value) {
+      this.write(element)
+    }
+
+    this.writeObjectEnd()
+  }
+
+  /**
+   * Read a set
+   * @returns {Set}
+   */
+  readSet() {
+    const set = new Set()
+    const length = this.byteArr.readUnsignedInt()
+
+    this.references.push(set)
+
+    for (let i = 0; i < length; i++) {
+      set.add(this.read())
+    }
+
+    if (this.byteArr.readShort() === 0) {
+      return this.readObjectEnd(set)
+    } else {
+      throw new Error('Invalid object end string found.')
+    }
+  }
+
+  /**
    * Write a typed object
    * @param {Object} value
    */
@@ -298,6 +341,8 @@ module.exports = class AMF0 {
         this.writeECMAArray(value)
       } else if (type === Date) {
         this.writeDate(value)
+      } else if (type === Set) {
+        this.writeSet(value)
       } else if (this.byteArr.classMapping.has(type)) {
         this.writeTypedObject(value)
       } else if (typeof value === 'object') {
@@ -328,6 +373,7 @@ module.exports = class AMF0 {
       case Markers.OBJECT: return this.readObject()
       case Markers.ECMA_ARRAY: return this.readECMAArray()
       case Markers.DATE: return this.readDate()
+      case Markers.SET: return this.readSet()
       case Markers.TYPED_OBJECT: return this.readTypedObject()
       case Markers.AVMPLUS: return this.readAvmPlus()
       default: throw new Error(`Unknown or unsupported AMF0 marker: '${marker}'.`)

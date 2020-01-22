@@ -10,7 +10,7 @@ exports.isDenseArray = (arr) => Object.keys(arr).length === arr.length
 
 /**
  * @exports
- * Returns whether the given integer is uint29 or not
+ * Returns whether the given integer fits in a variable-length unsigned 29-bit integer
  * @param {Number} int
  * @returns {Boolean}
  */
@@ -18,11 +18,11 @@ exports.isUInt29 = (int) => int << 3 >> 3 === int
 
 /**
  * @exports
- * Returns whether the given type is Vector like or not
+ * Returns whether the given type is vector like or not
  * @param {Object} type
  * @returns {Boolean}
  */
-exports.isVectorLike = (type) => type === Int32Array || type === Uint32Array || type === Float64Array
+exports.isVectorLike = (type) => [Int32Array, Uint32Array, Float64Array].indexOf(type) !== -1
 
 /**
  * @exports
@@ -62,6 +62,24 @@ exports.getTypedWriteFunc = (type) => {
 
 /**
  * @exports
+ * Returns the read function of the given typed array
+ * @param {Object} type
+ * @returns {String}
+ */
+exports.getTypedReadFunc = (type) => {
+  let func = ''
+
+  switch (type) {
+    case Int32Array: func = 'readInt'; break
+    case Uint32Array: func = 'readUnsignedInt'; break
+    case Float64Array: func = 'readDouble'; break
+  }
+
+  return func
+}
+
+/**
+ * @exports
  * Returns the constructed variant of the given typed array
  * @param {String} type
  * @param {Number} length
@@ -77,22 +95,4 @@ exports.getTypedConstruct = (type, length) => {
   }
 
   return constructed
-}
-
-/**
- * @exports
- * Returns the read function of the given typed array
- * @param {Object} type
- * @returns {String}
- */
-exports.getTypedReadFunc = (type) => {
-  let func = ''
-
-  switch (type) {
-    case Int32Array: func = 'readInt'; break
-    case Uint32Array: func = 'readUnsignedInt'; break
-    case Float64Array: func = 'readDouble'; break
-  }
-
-  return func
 }

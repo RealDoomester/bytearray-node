@@ -5,17 +5,15 @@
 
 A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
-**XML, Vector.object and weak dictionary types are not supported.**
-
-**Dictionaries are Maps and Vectors are typed arrays that you can only make fixed by using Object.seal.**
-
 # Installation
 
 `npm install bytearray-node`
 
 # Usage
 
-For extended usage, see [here](https://github.com/Zaseth/bytearray-node/tree/master/test)
+For extended usage, click [here](https://github.com/Zaseth/bytearray-node/wiki)
+
+For tests, click [here](https://github.com/Zaseth/bytearray-node/tree/master/test)
 
 ```javascript
 const ByteArray = require('bytearray-node')
