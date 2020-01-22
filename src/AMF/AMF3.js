@@ -555,7 +555,7 @@ module.exports = class AMF3 {
       this.writeUInt29(idx << 1)
     } else {
       this.writeUInt29((value.length << 1) | 1)
-      this.byteArr.writeBoolean(Object.isSealed(value))
+      this.byteArr.writeBoolean(Object.isExtensible(value))
 
       for (let i = 0; i < value.length; i++) {
         this.byteArr[Util.getTypedWriteFunc(value.constructor)](value[i])
@@ -574,14 +574,18 @@ module.exports = class AMF3 {
     }
 
     const length = this.flags
-    const sealed = this.byteArr.readBoolean()
+    const fixed = this.byteArr.readBoolean()
     const value = Util.getTypedConstruct(type, length)
 
     for (let i = 0; i < length; i++) {
       value[i] = this.byteArr[Util.getTypedReadFunc(value.constructor)]()
     }
 
-    return sealed ? Object.seal(value) : value
+    if (fixed) {
+      Object.preventExtensions(value)
+    }
+
+    return value
   }
 
   /**

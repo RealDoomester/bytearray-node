@@ -275,13 +275,13 @@ it('Can write/read AMF3 typed arrays (vector)', (tape) => {
   const ba = new ByteArray()
 
   const normal_int_arr = new Int32Array([1, 2, 3])
-  const fixed_int_arr = Object.seal(new Int32Array([4, 5, 6]))
+  const fixed_int_arr = Object.preventExtensions(new Int32Array([4, 5, 6]))
 
   const normal_uint_arr = new Uint32Array([1, 2, 3])
-  const fixed_uint_arr = Object.seal(new Uint32Array([4, 5, 6]))
+  const fixed_uint_arr = Object.preventExtensions(new Uint32Array([4, 5, 6]))
 
   const normal_double_arr = new Float64Array([1.1, 2.2, 3.3])
-  const fixed_double_arr = Object.seal(new Float64Array([4.4, 5.5, 6.6]))
+  const fixed_double_arr = Object.preventExtensions(new Float64Array([4.4, 5.5, 6.6]))
 
   ba.writeObject(normal_int_arr)
   ba.writeObject(fixed_int_arr)
@@ -305,15 +305,15 @@ it('Can write/read AMF3 typed arrays (vector)', (tape) => {
 
   tape.deepEqual(read_normal_int_arr, normal_int_arr)
   tape.deepEqual(read_fixed_int_arr, fixed_int_arr)
-  tape.ok(Object.isSealed(read_fixed_int_arr))
+  tape.ok(Object.isExtensible(read_fixed_int_arr))
 
   tape.deepEqual(read_normal_uint_arr, normal_uint_arr)
   tape.deepEqual(read_fixed_uint_arr, fixed_uint_arr)
-  tape.ok(Object.isSealed(read_fixed_uint_arr))
+  tape.ok(Object.isExtensible(read_fixed_uint_arr))
 
   tape.deepEqual(read_normal_double_arr, normal_double_arr)
   tape.deepEqual(read_fixed_double_arr, fixed_double_arr)
-  tape.ok(Object.isSealed(read_fixed_double_arr))
+  tape.ok(Object.isExtensible(read_fixed_double_arr))
 
   tape.end()
 })
