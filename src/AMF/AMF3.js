@@ -5,6 +5,7 @@
  * @constant
  */
 const ByteArray = require('bytearray-node')
+const { murmurHash128 } = require('murmurhash-native')
 
 /**
  * Our enums
@@ -389,7 +390,7 @@ module.exports = class AMF3 {
     const sealedMemberCount = sealedMemberNames.length
 
     const traits = { isExternallySerialized, isDynamicObject, sealedMemberCount, className, sealedMemberNames }
-    const idx = this.getReference(Util.hash(traits), 'traitReferences')
+    const idx = this.getReference(murmurHash128(JSON.stringify(traits)), 'traitReferences')
 
     if (idx !== false) {
       this.writeUInt29((idx << 2) | 1)

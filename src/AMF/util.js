@@ -1,15 +1,5 @@
 'use strict'
 
-const { createHash } = require('crypto')
-
-/**
- * @exports
- * Returns a hashed object
- * @param {Object} obj
- * @returns {String}
- */
-exports.hash = (obj) => createHash('md5').update(JSON.stringify(obj)).digest('hex')
-
 /**
  * @exports
  * Returns whether the given array is dense or not
