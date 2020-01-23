@@ -31,15 +31,7 @@ exports.isVectorLike = (type) => [Int32Array, Uint32Array, Float64Array].indexOf
  * @returns {String}
  */
 exports.getTypedMarkerKey = (type) => {
-  let key = ''
-
-  switch (type) {
-    case Int32Array: key = 'VECTOR_INT'; break
-    case Uint32Array: key = 'VECTOR_UINT'; break
-    case Float64Array: key = 'VECTOR_DOUBLE'; break
-  }
-
-  return key
+  return { Int32Array: 'VECTOR_INT', Uint32Array: 'VECTOR_UINT', Float64Array: 'VECTOR_DOUBLE' }[type.name]
 }
 
 /**
@@ -49,15 +41,7 @@ exports.getTypedMarkerKey = (type) => {
  * @returns {String}
  */
 exports.getTypedWriteFunc = (type) => {
-  let func = ''
-
-  switch (type) {
-    case Int32Array: func = 'writeInt'; break
-    case Uint32Array: func = 'writeUnsignedInt'; break
-    case Float64Array: func = 'writeDouble'; break
-  }
-
-  return func
+  return { Int32Array: 'writeInt', Uint32Array: 'writeUnsignedInt', Float64Array: 'writeDouble' }[type.name]
 }
 
 /**
@@ -67,15 +51,7 @@ exports.getTypedWriteFunc = (type) => {
  * @returns {String}
  */
 exports.getTypedReadFunc = (type) => {
-  let func = ''
-
-  switch (type) {
-    case Int32Array: func = 'readInt'; break
-    case Uint32Array: func = 'readUnsignedInt'; break
-    case Float64Array: func = 'readDouble'; break
-  }
-
-  return func
+  return { Int32Array: 'readInt', Uint32Array: 'readUnsignedInt', Float64Array: 'readDouble' }[type.name]
 }
 
 /**
@@ -86,13 +62,11 @@ exports.getTypedReadFunc = (type) => {
  * @returns {Object}
  */
 exports.getTypedConstruct = (type, length) => {
-  let constructed
-
-  switch (type) {
-    case 'int': constructed = new Int32Array(length); break
-    case 'uint': constructed = new Uint32Array(length); break
-    case 'double': constructed = new Float64Array(length); break
+  if (type === 'int') {
+    return new Int32Array(length)
+  } else if (type === 'uint') {
+    return new Uint32Array(length)
+  } else {
+    return new Float64Array(length)
   }
-
-  return constructed
 }
