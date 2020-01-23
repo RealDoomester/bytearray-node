@@ -5,7 +5,6 @@
  * @constant
  */
 const ByteArray = require('bytearray-node')
-const hash = require('object-hash')
 
 /**
  * Our enums
@@ -390,7 +389,7 @@ module.exports = class AMF3 {
     const sealedMemberCount = sealedMemberNames.length
 
     const traits = { isExternallySerialized, isDynamicObject, sealedMemberCount, className, sealedMemberNames }
-    const idx = this.getReference(hash(traits), 'traitReferences')
+    const idx = this.getReference(Util.hash(traits), 'traitReferences')
 
     if (idx !== false) {
       this.writeUInt29((idx << 2) | 1)
