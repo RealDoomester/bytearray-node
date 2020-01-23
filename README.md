@@ -11,7 +11,7 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 # Usage
 
-For extended usage, click [here](https://github.com/Zaseth/bytearray-node/wiki)
+For extended usage (API), click [here](https://github.com/Zaseth/bytearray-node/wiki)
 
 For tests, click [here](https://github.com/Zaseth/bytearray-node/tree/master/test)
 
