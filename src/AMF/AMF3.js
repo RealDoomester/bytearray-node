@@ -292,40 +292,18 @@ module.exports = class AMF3 {
       return this.reference
     }
 
-    const denseCount = this.flags
+    const value = []
+    const length = this.flags
 
-    let finalArr
-    let associativeCount = 0
+    this.objectReferences.push(value)
 
-    while (true) {
-      const key = this.readString()
+    for (let key = this.readString(); key !== ''; value[key] = this.read(), key = this.readString()) { }
 
-      if (!key) {
-        break
-      }
-
-      associativeCount++
-
-      if (associativeCount === 1) {
-        finalArr = {}
-
-        this.objectReferences.push(finalArr)
-      }
-
-      finalArr[key] = this.read()
+    for (let i = 0; i < length; i++) {
+      value[i] = this.read()
     }
 
-    if (associativeCount === 0) {
-      finalArr = []
-
-      this.objectReferences.push(finalArr)
-    }
-
-    for (let i = 0; i < denseCount; i++) {
-      finalArr[i] = this.read()
-    }
-
-    return finalArr
+    return value
   }
 
   /**
