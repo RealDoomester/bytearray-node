@@ -61,6 +61,16 @@ module.exports = class AMF0 {
   }
 
   /**
+   * Add a reference when needed
+   * @param {Object} value
+   */
+  addReference(value) {
+    if (this.references.indexOf(value) === -1) {
+      this.references.push(value)
+    }
+  }
+
+  /**
    * Write a reference
    * @param {Number} idx
    */
@@ -135,7 +145,7 @@ module.exports = class AMF0 {
   readObject() {
     const obj = {}
 
-    this.references.push(obj)
+    this.addReference(obj)
 
     for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
 
@@ -172,7 +182,7 @@ module.exports = class AMF0 {
     const arr = []
     const length = this.byteArr.readUnsignedInt()
 
-    this.references.push(arr)
+    this.addReference(arr)
 
     for (let i = 0; i < length; i++) {
       arr[this.byteArr.readUTF()] = this.read()
@@ -209,7 +219,7 @@ module.exports = class AMF0 {
     const date = new Date(this.byteArr.readDouble())
 
     this.byteArr.readShort()
-    this.references.push(date)
+    this.addReference(date)
 
     return date
   }
@@ -243,7 +253,7 @@ module.exports = class AMF0 {
     const set = new Set()
     const length = this.byteArr.readUnsignedInt()
 
-    this.references.push(set)
+    this.addReference(set)
 
     for (let i = 0; i < length; i++) {
       set.add(this.read())
@@ -290,11 +300,9 @@ module.exports = class AMF0 {
       throw new Error(`The classname: '${className}' is not registered.`)
     }
 
-    const classObject = this.byteArr.aliasMapping[className]
+    obj = new (this.byteArr.aliasMapping[className])()
 
-    this.references.push(obj)
-
-    obj = new classObject()
+    this.addReference(obj)
 
     for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
 

@@ -581,11 +581,7 @@ module.exports = class AMF3 {
       value[i] = this.byteArr[Util.getTypedReadFunc(value.constructor)]()
     }
 
-    if (fixed) {
-      Object.preventExtensions(value)
-    }
-
-    return value
+    return fixed ? Object.preventExtensions(value) : value
   }
 
   /**
