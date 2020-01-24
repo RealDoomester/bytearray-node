@@ -51,6 +51,8 @@ const IExternalizable = require('bytearray-node/enums/IExternalizable')
 
 class Person extends IExternalizable {
   constructor(name) {
+    super()
+
     this.name = name
   }
 
