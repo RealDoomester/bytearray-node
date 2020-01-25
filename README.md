@@ -9,11 +9,13 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 `npm install bytearray-node`
 
-# Usage
+# API
 
 * [Adobe API](https://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/utils/ByteArray.html)
 * [Library API](https://github.com/Zaseth/bytearray-node/wiki)
 * [Tests](https://github.com/Zaseth/bytearray-node/tree/master/test)
+
+# A simple example
 
 ```javascript
 const ByteArray = require('bytearray-node')
@@ -43,36 +45,38 @@ console.log(ba.readByte()) // 1
 console.log(ba.readShort()) // 5
 ```
 
-# AMF IExternalizable example
+# AMF3 IExternalizable example
 
 ```javascript
 const ByteArray = require('bytearray-node')
 const IExternalizable = require('bytearray-node/enums/IExternalizable')
 
 class Person extends IExternalizable {
-  constructor(name) {
+  constructor(name, age) {
     super()
 
     this.name = name
+    this.age = age
   }
 
   writeExternal(ba) {
     ba.writeUTF(this.name)
+    ba.writeByte(this.age)
   }
 
   readExternal(ba) {
     this.name = ba.readUTF()
+    this.age = ba.readByte()
   }
 }
 
 ByteArray.registerClassAlias('src.person', Person)
 
 const ba = new ByteArray()
-const person = new Person('Daan')
 
-ba.writeObject(person)
+ba.writeObject(new Person('Daan', 18))
 
 ba.position = 0
 
-console.log(ba.readObject()) // Person { name: 'Daan' }
+console.log(ba.readObject()) // Person { name: 'Daan', age: 18 }
 ```

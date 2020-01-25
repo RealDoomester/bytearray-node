@@ -278,7 +278,7 @@ it('Passes the AMF0 object stress test', (tape) => {
 })
 
 it('Supports the AVMPLUS marker', (tape) => {
-  tape.plan(3)
+  tape.plan(4)
 
   const ba = new ByteArray()
   const ba2 = new ByteArray()
@@ -289,11 +289,12 @@ it('Supports the AVMPLUS marker', (tape) => {
 
   ba.writeObject({ id: 1 })
   ba.writeByte(0x11)
-  ba.buffer = Buffer.concat([ba.buffer, ba2.buffer])
+  ba.writeBytes(ba2)
 
   ba.position = 0
 
   tape.deepEqual(ba.readObject(), { id: 1 })
+  tape.equal(ba.objectEncoding, ObjectEncoding.AMF0)
   tape.deepEqual(ba.readObject(), { name: 'Daan' })
   tape.equal(ba.objectEncoding, ObjectEncoding.AMF3)
 
