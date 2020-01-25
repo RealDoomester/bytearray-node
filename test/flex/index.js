@@ -12,6 +12,17 @@ const ByteArray = require('../../src/')
  * @constant
  */
 const ArrayCollection = require('../../flex/ArrayCollection')
+const UUID = require('../../flex/UUID')
+
+it('Can convert a 128-bit UID from ByteArray to string, and reversed', (tape) => {
+  tape.plan(1)
+
+  const uid = UUID.createUID()
+
+  tape.deepEqual(UUID.fromByteArray(UUID.toByteArray(uid)), uid)
+
+  tape.end()
+})
 
 it('Can write/read AMF3 ArrayCollection', (tape) => {
   tape.plan(1)
