@@ -1,13 +1,18 @@
 {
   "name": "bytearray-node",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3 and remoting/flex.",
   "main": "./src/",
   "engines": {
     "node": ">=12.0.0"
   },
   "scripts": {
-    "test": "node ./test/ && node ./test/AMF/AMF0 && node ./test/AMF/AMF3 && node ./test/remoting && node ./test/flex"
+    "test": "node ./test/ && node ./test/AMF/AMF0 && node ./test/AMF/AMF3 && node ./test/remoting && node ./test/flex",
+    "ba": "node ./test",
+    "amf0": "node ./test/AMF/AMF0",
+    "amf3": "node ./test/AMF/AMF3",
+    "remoting": "node ./test/remoting",
+    "flex": "node ./test/flex"
   },
   "homepage": "https://github.com/Zaseth/bytearray-node",
   "repository": {
@@ -29,7 +34,8 @@
     "AMF3",
     "Action Message Format",
     "Adobe",
-    "Flash"
+    "Flash",
+    "Flex"
   ],
   "dependencies": {
     "iconv-lite": "^0.5.1",
