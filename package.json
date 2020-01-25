@@ -1,13 +1,13 @@
 {
   "name": "bytearray-node",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.",
   "main": "./src/",
   "engines": {
     "node": ">=12.0.0"
   },
   "scripts": {
-    "test": "node ./test/ && node ./test/AMF/AMF0 && node ./test/AMF/AMF3"
+    "test": "node ./test/ && node ./test/AMF/AMF0 && node ./test/AMF/AMF3 && node ./test/remoting"
   },
   "homepage": "https://github.com/Zaseth/bytearray-node",
   "repository": {

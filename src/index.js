@@ -15,6 +15,7 @@ const { encodingExists, decode, encode } = require('iconv-lite')
 const Endian = require('../enums/Endian')
 const ObjectEncoding = require('../enums/ObjectEncoding')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
+const Packet = require('../enums/Packet')
 
 /**
  * Our AMF dependencies
@@ -549,5 +550,47 @@ module.exports = class ByteArray {
    */
   writeUTFBytes(value) {
     this.writeMultiByte(value)
+  }
+
+  /**
+   * Writes an AMF message
+   * @param {Packet} packet
+   */
+  writeMessage(packet) {
+    // Todo...
+  }
+
+  /**
+   * Reads an AMF message
+   * @returns {Packet}
+   */
+  readMessage() {
+    const headers = []
+    const messages = []
+
+    const version = this.readUnsignedShort()
+    const headerCount = this.readUnsignedShort()
+
+    for (let i = 0; i < headerCount; i++) {
+      headers[i] = {
+        name: this.readUTF(),
+        mustUnderstand: this.readBoolean(),
+        length: this.readInt(),
+        value: new AMF0(this).read()
+      }
+    }
+
+    const messageCount = this.readUnsignedShort()
+
+    for (let i = 0; i < messageCount; i++) {
+      messages[i] = {
+        targetURI: this.readUTF(),
+        responseURI: this.readUTF(),
+        length: this.readInt(),
+        value: new AMF0(this).read()
+      }
+    }
+
+    return new Packet(headers, messages, version)
   }
 }

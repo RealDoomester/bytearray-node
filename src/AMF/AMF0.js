@@ -14,6 +14,7 @@ const Markers = {
   REFERENCE: 0x07,
   ECMA_ARRAY: 0x08,
   OBJECT_END: 0x09,
+  STRICT_ARRAY: 0x0A,
   DATE: 0x0B,
   LONG_STRING: 0x0C,
   SET: 0x0E,
@@ -183,6 +184,23 @@ module.exports = class AMF0 {
     } else {
       throw new Error('Invalid object end string found.')
     }
+  }
+
+  /**
+   * Read a strict array
+   * @returns {Array}
+   */
+  readStrictArray() {
+    const arr = []
+    const length = this.byteArr.readUnsignedInt()
+
+    this.references.push(arr)
+
+    for (let i = 0; i < length; i++) {
+      arr[i] = this.read()
+    }
+
+    return arr
   }
 
   /**
@@ -370,6 +388,7 @@ module.exports = class AMF0 {
       case Markers.REFERENCE: return this.references[this.byteArr.readUnsignedShort()]
       case Markers.OBJECT: return this.readObject()
       case Markers.ECMA_ARRAY: return this.readECMAArray()
+      case Markers.STRICT_ARRAY: return this.readStrictArray()
       case Markers.DATE: return this.readDate()
       case Markers.SET: return this.readSet()
       case Markers.TYPED_OBJECT: return this.readTypedObject()
