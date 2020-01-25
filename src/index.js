@@ -65,6 +65,17 @@ module.exports = class ByteArray {
      * @type {Number}
      */
     this.objectEncoding = ObjectEncoding.AMF3
+    /**
+     * Set Flex classes
+     */
+    this.setFlex()
+  }
+
+  /**
+   * Set Flex classes
+   */
+  setFlex() {
+    ByteArray.registerClassAlias('flex.messaging.io.ArrayCollection', require('../flex/ArrayCollection'))
   }
 
   /**
