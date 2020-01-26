@@ -3,4 +3,4 @@
 /**
  * @exports
  */
-module.exports = { AMF0: 0, AMF3: 3 }
+module.exports = Object.freeze({ AMF0: 0, AMF3: 3 })

@@ -3,4 +3,4 @@
 /**
  * @exports
  */
-module.exports = { LITTLE_ENDIAN: 'LE', BIG_ENDIAN: 'BE', SYSTEM: require('os').endianness() }
+module.exports = Object.freeze({ LITTLE_ENDIAN: 'LE', BIG_ENDIAN: 'BE', SYSTEM: require('os').endianness() })

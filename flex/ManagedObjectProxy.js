@@ -15,7 +15,7 @@ module.exports = class ManagedObjectProxy extends require('./ObjectProxy') {
   }
 
   /**
-   * Write the ObjectProxy
+   * Write the ManagedObjectProxy
    * @param {ByteArray} ba
    */
   writeExternal(ba) {
@@ -23,7 +23,7 @@ module.exports = class ManagedObjectProxy extends require('./ObjectProxy') {
   }
 
   /**
-   * Read the ObjectProxy
+   * Read the ManagedObjectProxy
    * @param {ByteArray} ba
    */
   readExternal(ba) {
