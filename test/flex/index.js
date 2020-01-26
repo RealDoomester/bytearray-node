@@ -17,6 +17,7 @@ const ArrayList = require('../../flex/ArrayList')
 const ObjectProxy = require('../../flex/ObjectProxy')
 const ManagedObjectProxy = require('../../flex/ManagedObjectProxy')
 const SerializationProxy = require('../../flex/SerializationProxy')
+const AbstractMessage = require('../../flex/AbstractMessage')
 const UUID = require('../../flex/UUID')
 
 it('Can convert a 128-bit UID from ByteArray to string, and reversed', (tape) => {
@@ -95,6 +96,23 @@ it('Can write/read AMF0 SerializationProxy', (tape) => {
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
   const obj = new SerializationProxy({ id: 1 })
+
+  ba.writeObject(obj)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), obj)
+
+  tape.end()
+})
+
+it('Can write/read AMF3 AbstractMessage', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const clientId = UUID.createUID()
+  const messageId = UUID.createUID()
+  const obj = new AbstractMessage({ test: true }, clientId, 'market-data-feed', { id: 1 }, messageId, Date.now())
 
   ba.writeObject(obj)
 

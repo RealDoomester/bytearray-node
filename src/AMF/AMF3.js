@@ -458,8 +458,6 @@ module.exports = class AMF3 {
 
       this.byteArr.buffer = Buffer.concat([this.byteArr.buffer, value.buffer])
       this.byteArr.position += value.length
-
-      this.writeUInt29(1)
     }
   }
 

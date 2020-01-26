@@ -31,8 +31,8 @@ exports.isUID = (uid) => uid.match(new RegExp(/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F
 exports.fromByteArray = (ba) => {
   let res = ''
 
-  if (ba.length !== 16) {
-    throw new Error('The given ByteArray does not have enough bytes to read a valid UID.')
+  if (!ba || ba.length !== 16) {
+    throw new Error('The given ByteArray (if given) does not have enough bytes to read a valid UID.')
   }
 
   for (let i = 0; i < 16; i++) {
