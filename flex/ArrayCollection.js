@@ -1,17 +1,11 @@
 'use strict'
 
 /**
- * Our enums
- * @constant
- */
-const IExternalizable = require('../enums/IExternalizable')
-
-/**
  * @exports
  * @class
  * @extends IExternalizable
  */
-module.exports = class ArrayCollection extends IExternalizable {
+module.exports = class ArrayCollection extends require('../enums/IExternalizable') {
   /**
    * @constructor
    * @param {Array} source

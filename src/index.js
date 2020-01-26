@@ -76,6 +76,10 @@ module.exports = class ByteArray {
    */
   setFlex() {
     ByteArray.registerClassAlias('flex.messaging.io.ArrayCollection', require('../flex/ArrayCollection'))
+    ByteArray.registerClassAlias('flex.messaging.io.ArrayList', require('../flex/ArrayList'))
+    ByteArray.registerClassAlias('flex.messaging.io.ObjectProxy', require('../flex/ObjectProxy'))
+    ByteArray.registerClassAlias('flex.messaging.io.ManagedObjectProxy', require('../flex/ManagedObjectProxy'))
+    ByteArray.registerClassAlias('flex.messaging.io.SerializationProxy', require('../flex/SerializationProxy'))
   }
 
   /**

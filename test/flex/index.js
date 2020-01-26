@@ -6,12 +6,17 @@
  */
 const it = require('tape')
 const ByteArray = require('../../src/')
+const ObjectEncoding = require('../../enums/ObjectEncoding')
 
 /**
  * Our Flex enums
  * @constant
  */
 const ArrayCollection = require('../../flex/ArrayCollection')
+const ArrayList = require('../../flex/ArrayList')
+const ObjectProxy = require('../../flex/ObjectProxy')
+const ManagedObjectProxy = require('../../flex/ManagedObjectProxy')
+const SerializationProxy = require('../../flex/SerializationProxy')
 const UUID = require('../../flex/UUID')
 
 it('Can convert a 128-bit UID from ByteArray to string, and reversed', (tape) => {
@@ -35,6 +40,67 @@ it('Can write/read AMF3 ArrayCollection', (tape) => {
   ba.position = 0
 
   tape.deepEqual(ba.readObject(), collection)
+
+  tape.end()
+})
+
+it('Can write/read AMF3 ArrayList', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const list = new ArrayList([1, 2, 3])
+
+  ba.writeObject(list)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), list)
+
+  tape.end()
+})
+
+it('Can write/read AMF3 ObjectProxy', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const obj = new ObjectProxy({ name: 'Daan', age: 18 })
+
+  ba.writeObject(obj)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), obj)
+
+  tape.end()
+})
+
+it('Can write/read AMF3 ManagedObjectProxy', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  const obj = new ManagedObjectProxy({ name: 'Daan', age: 18 })
+
+  ba.writeObject(obj)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), obj)
+
+  tape.end()
+})
+
+it('Can write/read AMF0 SerializationProxy', (tape) => {
+  tape.plan(1)
+
+  const ba = new ByteArray()
+  ba.objectEncoding = ObjectEncoding.AMF0
+  const obj = new SerializationProxy({ id: 1 })
+
+  ba.writeObject(obj)
+
+  ba.position = 0
+
+  tape.deepEqual(ba.readObject(), obj)
 
   tape.end()
 })
