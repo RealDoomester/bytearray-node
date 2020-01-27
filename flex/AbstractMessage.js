@@ -72,41 +72,66 @@ module.exports = class AbstractMessage extends IExternalizable {
    * @param {ByteArray} ba
    */
   writeExternal(ba) {
-    const hasBody = Object.keys(this.body).length > 0
-    const hasDestination = this.destination !== ''
-    const hasHeaders = Object.keys(this.headers).length > 0
-    const hasTimestamp = this.timestamp !== 0
-    const hasTimeToLive = this.timeToLive !== 0
-
-    let flags = 0
     let nextFlags = 0
+
     const clientIdBytes = typeof this.clientId === 'string' && this.clientId.length > 0 ? toByteArray(this.clientId) : null
     const messageIdBytes = typeof this.messageId === 'string' && this.messageId.length > 0 ? toByteArray(this.messageId) : null
 
-    flags |= hasBody ? 1 : flags
-    flags |= clientIdBytes ? 2 : flags
-    flags |= hasDestination ? 4 : flags
-    flags |= hasHeaders ? 8 : flags
-    flags |= messageIdBytes ? 16 : flags
-    flags |= hasTimestamp ? 32 : flags
-    flags |= hasTimeToLive ? 64 : flags
-    flags |= clientIdBytes || messageIdBytes ? 128 : flags
+    const hasClientId = clientIdBytes !== null
+    const hasMessageId = messageIdBytes !== null
+    const hasBody = typeof this.body === 'object' && Object.keys(this.body).length > 0
+    const hasDestination = typeof this.destination === 'string' && this.destination !== ''
+    const hasHeaders = typeof this.headers === 'object' && Object.keys(this.headers).length > 0
+    const hasTimestamp = typeof this.timestamp === 'number' && this.timestamp !== 0
+    const hasTimeToLive = typeof this.timeToLive === 'number' && this.timeToLive !== 0
 
-    ba.writeUnsignedByte(flags)
+    const flagRules = [
+      [hasBody, 1],
+      [hasClientId, 2],
+      [hasDestination, 4],
+      [hasHeaders, 8],
+      [hasMessageId, 16],
+      [hasTimestamp, 32],
+      [hasTimeToLive, 64],
+      [hasClientId || hasMessageId, 128],
+      [hasClientId, 1],
+      [hasMessageId, 2]
+    ]
 
-    nextFlags |= clientIdBytes ? 1 : nextFlags
-    nextFlags |= messageIdBytes ? 2 : nextFlags
+    for (let i = 0, flags = 0; i < flagRules.length; i++) {
+      const [hasFlag, bit] = flagRules[i]
 
-    if (nextFlags !== 0) ba.writeUnsignedByte(nextFlags)
-    if (hasBody) ba.writeObject(this.body)
-    if (clientIdBytes) ba.writeObject(this.clientId)
-    if (hasDestination) ba.writeObject(this.destination)
-    if (hasHeaders) ba.writeObject(this.headers)
-    if (messageIdBytes) ba.writeObject(this.messageId)
-    if (hasTimestamp) ba.writeObject(this.timestamp)
-    if (hasTimeToLive) ba.writeObject(this.timeToLive)
-    if (clientIdBytes) ba.writeObject(clientIdBytes)
-    if (messageIdBytes) ba.writeObject(messageIdBytes)
+      if (i >= 0 && i <= 7) {
+        flags |= hasFlag ? bit : flags
+
+        if (i + 1 === flagRules.length - 2) {
+          ba.writeUnsignedByte(flags)
+        }
+      } else {
+        nextFlags |= hasFlag ? bit : nextFlags
+      }
+    }
+
+    const writeRules = [
+      [nextFlags !== 0, nextFlags],
+      [hasBody, this.body],
+      [hasClientId, this.clientId],
+      [hasDestination, this.destination],
+      [hasHeaders, this.headers],
+      [hasMessageId, this.messageId],
+      [hasTimestamp, this.timestamp],
+      [hasTimeToLive, this.timeToLive],
+      [hasClientId, clientIdBytes],
+      [hasMessageId, messageIdBytes]
+    ]
+
+    for (let i = 0; i < writeRules.length; i++) {
+      const [canWrite, value] = writeRules[i]
+
+      if (canWrite) {
+        i === 0 ? ba.writeUnsignedByte(value) : ba.writeObject(value)
+      }
+    }
   }
 
   /**
