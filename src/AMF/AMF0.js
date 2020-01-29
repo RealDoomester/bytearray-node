@@ -97,6 +97,8 @@ module.exports = class AMF0 {
    * @param {Boolean} useType
    */
   writeString(value, useType = true) {
+    value = value.toString()
+
     const length = Buffer.byteLength(value)
     const isLong = length > 65535
 

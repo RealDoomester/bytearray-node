@@ -185,6 +185,8 @@ module.exports = class AMF3 {
    * @param {Boolean} useType
    */
   writeString(value, useType = true) {
+    value = value.toString()
+
     if (useType) {
       this.byteArr.writeByte(Markers.STRING)
     }
