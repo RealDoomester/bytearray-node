@@ -97,13 +97,14 @@ module.exports = class AMF0 {
    * @param {Boolean} useType
    */
   writeString(value, useType = true) {
-    const isLong = value.length > 65535
+    const length = Buffer.byteLength(value)
+    const isLong = length > 65535
 
     if (useType) {
       this.byteArr.writeByte(isLong ? Markers.LONG_STRING : Markers.STRING)
     }
 
-    isLong ? this.byteArr.writeUnsignedInt(value.length) : this.byteArr.writeUnsignedShort(value.length)
+    isLong ? this.byteArr.writeUnsignedInt(length) : this.byteArr.writeUnsignedShort(length)
 
     this.byteArr.writeUTFBytes(value)
   }

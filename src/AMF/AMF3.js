@@ -189,7 +189,9 @@ module.exports = class AMF3 {
       this.byteArr.writeByte(Markers.STRING)
     }
 
-    if (value.length === 0) {
+    const length = Buffer.byteLength(value)
+
+    if (length === 0) {
       this.writeUInt29(1)
     } else {
       const idx = this.getReference(value, 'stringReferences')
@@ -197,7 +199,7 @@ module.exports = class AMF3 {
       if (idx !== false) {
         this.writeUInt29(idx << 1)
       } else {
-        this.writeUInt29((value.length << 1) | 1)
+        this.writeUInt29((length << 1) | 1)
         this.byteArr.writeUTFBytes(value)
       }
     }
