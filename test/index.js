@@ -13,6 +13,7 @@ const ByteArray = require('../src/')
  */
 const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
+const ObjectEncoding = require('../enums/ObjectEncoding')
 
 it('Can write/read a byte', (tape) => {
   tape.plan(2)
@@ -150,6 +151,28 @@ it('Can write/read a string', (tape) => {
   ba.position = 0
 
   tape.equal(ba.readMultiByte(5, 'win1251'), 'Hello')
+
+  tape.end()
+})
+
+it('Can write/read altcodes', (tape) => {
+  tape.plan(3)
+
+  const ba = new ByteArray()
+  const str = 'ßÞÐØ×Ã'
+
+  ba.writeUTF(str)
+  ba.writeObject(str)
+  ba.objectEncoding = ObjectEncoding.AMF0
+  ba.writeObject(str)
+
+  ba.position = 0
+
+  tape.equal(ba.readUTF(), str)
+  ba.objectEncoding = ObjectEncoding.AMF3
+  tape.equal(ba.readObject(), str)
+  ba.objectEncoding = ObjectEncoding.AMF0
+  tape.equal(ba.readObject(), str)
 
   tape.end()
 })
