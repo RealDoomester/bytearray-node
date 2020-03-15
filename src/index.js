@@ -40,6 +40,25 @@ module.exports = class ByteArray {
   static aliasMapping = Object.create(null)
 
   /**
+   * The current position
+   * @private
+   * @type {Number}
+   */
+  #position
+  /**
+   * The byte order
+   * @private
+   * @type {String}
+   */
+  #endian
+  /**
+   * The AMF object encoding
+   * @private
+   * @type {Number}
+   */
+  #objectEncoding
+
+  /**
    * @constructor
    * @param {Buffer|Array} buffer
    */
@@ -51,27 +70,22 @@ module.exports = class ByteArray {
     this.buffer = Buffer.isBuffer(buffer) ? buffer : Array.isArray(buffer) ? Buffer.from(buffer) : Buffer.alloc(0)
     /**
      * The current position
+     * @private
      * @type {Number}
      */
-    this.position = 0
+    this.#position = 0
     /**
      * The byte order
+     * @private
      * @type {String}
      */
-    this.endian = Endian.BIG_ENDIAN
+    this.#endian = Endian.BIG_ENDIAN
     /**
      * The AMF object encoding
+     * @private
      * @type {Number}
      */
-    this.objectEncoding = ObjectEncoding.AMF3
-  }
-
-  /**
-   * Returns the length of the buffer
-   * @returns {Number}
-   */
-  get length() {
-    return this.buffer.length
+    this.#objectEncoding = ObjectEncoding.AMF3
   }
 
   /**
@@ -83,10 +97,82 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Returns the current position
+   * @returns {Number}
+   */
+  get position() {
+    return this.#position
+  }
+
+  /**
+   * Sets the position
+   * @param {Number} value
+   */
+  set position(value) {
+    if (Number.isInteger(value) && value >= 0) {
+      this.#position = value
+    } else {
+      throw new TypeError(`Invalid value for position: '${value}'.`)
+    }
+  }
+
+  /**
+   * Returns the byte order
+   * @returns {String}
+   */
+  get endian() {
+    return this.#endian
+  }
+
+  /**
+   * Sets the byte order
+   * @param {String} value
+   */
+  set endian(value) {
+    if (value === 'LE' || value === 'BE') {
+      this.#endian = value
+    } else {
+      throw new TypeError(`Invalid value for endian: '${value}'.`)
+    }
+  }
+
+  /**
+   * Returns the AMF object encoding
+   * @returns {Number}
+   */
+  get objectEncoding() {
+    return this.#objectEncoding
+  }
+
+  /**
+   * Sets the AMF object encoding
+   * @param {Number} value
+   */
+  set objectEncoding(value) {
+    if (Number.isInteger(value) && value === 0 || value === 3) {
+      this.#objectEncoding = value
+    } else {
+      throw new TypeError(`Invalid value for objectEncoding: '${value}'.`)
+    }
+  }
+
+  /**
+   * Returns the length of the buffer
+   * @returns {Number}
+   */
+  get length() {
+    return this.buffer.length
+  }
+
+  /**
    * Sets the length of the buffer
    * @param {Number} value
    */
   set length(value) {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new TypeError(`Invalid value for length: '${value}'.`)
+    }
+
     if (value === 0) {
       this.clear()
     } else if (value !== this.length) {
