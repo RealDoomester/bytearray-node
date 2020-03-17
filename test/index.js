@@ -130,6 +130,22 @@ it('Can write/read a float/double', (tape) => {
   tape.end()
 })
 
+it('Can write/read a long', (tape) => {
+  tape.plan(2)
+
+  const ba = new ByteArray()
+
+  ba.writeLong(BigInt(-5))
+  ba.writeUnsignedLong(BigInt(2))
+
+  ba.position = 0
+
+  tape.equal(ba.readLong(), BigInt(-5))
+  tape.equal(ba.readUnsignedLong(), BigInt(2))
+
+  tape.end()
+})
+
 it('Can write/read a string', (tape) => {
   tape.plan(4)
 

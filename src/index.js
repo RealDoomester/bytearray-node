@@ -363,6 +363,14 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Reads a signed long
+   * @returns {BigInt}
+   */
+  readLong() {
+    return this.readBufferFunc('readBigInt64', 8)
+  }
+
+  /**
    * Reads a multibyte string
    * @param {Number} length
    * @param {String} charset
@@ -433,6 +441,14 @@ module.exports = class ByteArray {
    */
   readUnsignedShort() {
     return this.readBufferFunc('readUInt16', 2)
+  }
+
+  /**
+   * Reads an unsigned long
+   * @returns {BigInt}
+   */
+  readUnsignedLong() {
+    return this.readBufferFunc('readBigUInt64', 8)
   }
 
   /**
@@ -559,6 +575,14 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Writes a signed long
+   * @param {BigInt} value
+   */
+  writeLong(value) {
+    this.writeBufferFunc(value, 'writeBigInt64', 8)
+  }
+
+  /**
    * Writes a multibyte string
    * @param {String} value
    * @param {String} charset
@@ -618,6 +642,14 @@ module.exports = class ByteArray {
    */
   writeUnsignedShort(value) {
     this.writeBufferFunc(value, 'writeUInt16', 2)
+  }
+
+  /**
+   * Writes an unsigned long
+   * @param {BigInt} value
+   */
+  writeUnsignedLong(value) {
+    this.writeBufferFunc(value, 'writeBigUInt64', 8)
   }
 
   /**
