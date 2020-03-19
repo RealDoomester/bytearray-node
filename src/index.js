@@ -260,7 +260,11 @@ module.exports = class ByteArray {
    */
   expand(value) {
     if (this.bytesAvailable < value) {
-      this.buffer = Buffer.concat([this.buffer, Buffer.alloc(value - this.bytesAvailable)])
+      const old = this.buffer
+      const size = old.length + (value - this.bytesAvailable)
+
+      this.buffer = Buffer.alloc(size)
+      old.copy(this.buffer)
     }
   }
 
