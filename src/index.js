@@ -234,7 +234,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readBufferFunc(func, pos) {
-    const value = this.buffer[func + this.endian](this.position)
+    const value = this.buffer[`${func}${this.endian}`](this.position)
 
     this.position += pos
 
@@ -250,7 +250,7 @@ module.exports = class ByteArray {
   writeBufferFunc(value, func, pos) {
     this.expand(pos)
 
-    this.buffer[func + this.endian](value, this.position)
+    this.buffer[`${func}${this.endian}`](value, this.position)
     this.position += pos
   }
 
