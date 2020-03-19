@@ -94,7 +94,7 @@ module.exports = class AMF0 {
   /**
    * Write a string
    * @param {String} value
-   * @param {Boolean} useType
+   * @param {Boolean} [useType=true]
    */
   writeString(value, useType = true) {
     value = value.toString()

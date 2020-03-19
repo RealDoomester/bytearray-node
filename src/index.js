@@ -274,7 +274,7 @@ module.exports = class ByteArray {
 
   /**
    * Compresses the buffer
-   * @param {String} algorithm
+   * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
    */
   async compress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
@@ -315,8 +315,8 @@ module.exports = class ByteArray {
   /**
    * Reads multiple signed bytes from a ByteArray
    * @param {ByteArray} bytes
-   * @param {Number} offset
-   * @param {Number} length
+   * @param {Number} [offset=0]
+   * @param {Number} [length=0]
    */
   readBytes(bytes, offset = 0, length = 0) {
     if (length === 0) {
@@ -373,7 +373,7 @@ module.exports = class ByteArray {
   /**
    * Reads a multibyte string
    * @param {Number} length
-   * @param {String} charset
+   * @param {String} [charset='utf8']
    * @returns {String}
    */
   readMultiByte(length, charset = 'utf8') {
@@ -478,7 +478,7 @@ module.exports = class ByteArray {
 
   /**
    * Converts the buffer to a string
-   * @param {String} charset
+   * @param {String} [charset='utf8']
    * @returns {String}
    */
   toString(charset = 'utf8') {
@@ -491,7 +491,7 @@ module.exports = class ByteArray {
 
   /**
    * Decompresses the buffer
-   * @param {String} algorithm
+   * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
    */
   async uncompress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
@@ -533,8 +533,8 @@ module.exports = class ByteArray {
   /**
    * Writes multiple signed bytes to a ByteArray
    * @param {ByteArray} bytes
-   * @param {Number} offset
-   * @param {Number} length
+   * @param {Number} [offset=0]
+   * @param {Number} [length=0]
    */
   writeBytes(bytes, offset = 0, length = 0) {
     if (length === 0) {
@@ -585,7 +585,7 @@ module.exports = class ByteArray {
   /**
    * Writes a multibyte string
    * @param {String} value
-   * @param {String} charset
+   * @param {String} [charset='utf8']
    */
   writeMultiByte(value, charset = 'utf8') {
     this.position += Buffer.byteLength(value)

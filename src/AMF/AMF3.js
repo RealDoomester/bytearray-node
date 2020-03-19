@@ -182,7 +182,7 @@ module.exports = class AMF3 {
   /**
    * Write a string
    * @param {String} value
-   * @param {Boolean} useType
+   * @param {Boolean} [useType=true]
    */
   writeString(value, useType = true) {
     value = value.toString()
@@ -313,7 +313,7 @@ module.exports = class AMF3 {
   /**
    * Write an object
    * @param {Object} value
-   * @param {Boolean} isAnonymousObject
+   * @param {Boolean} [isAnonymousObject=false]
    */
   writeObject(value, isAnonymousObject = false) {
     const idx = this.getReference(value, 'objectReferences')
