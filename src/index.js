@@ -30,11 +30,13 @@ const AMF3 = require('./AMF/AMF3')
 module.exports = class ByteArray {
   /**
    * Used to preserve class objects
+   * @static
    * @type {WeakMap}
    */
   static classMapping = new WeakMap()
   /**
    * Used to preserve alias strings
+   * @static
    * @type {Object}
    */
   static aliasMapping = Object.create(null)
