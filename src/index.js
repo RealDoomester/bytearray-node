@@ -24,6 +24,13 @@ const AMF0 = require('./AMF/AMF0')
 const AMF3 = require('./AMF/AMF3')
 
 /**
+ * Helper function that converts data types to a buffer
+ * @param {Buffer|Array|Number} v
+ * @returns {Buffer}
+ */
+const convert = (v) => Buffer.isBuffer(v) ? v : Array.isArray(v) ? Buffer.from(v) : Number.isInteger(v) ? Buffer.alloc(v) : Buffer.alloc(0)
+
+/**
  * @exports
  * @class
  */
@@ -62,14 +69,14 @@ module.exports = class ByteArray {
 
   /**
    * @constructor
-   * @param {Buffer|Array} buffer
+   * @param {Buffer|Array|Number} buffer
    */
   constructor(buffer) {
     /**
      * Holds the data
      * @type {Buffer}
      */
-    this.buffer = Buffer.isBuffer(buffer) ? buffer : Array.isArray(buffer) ? Buffer.from(buffer) : Buffer.alloc(0)
+    this.buffer = convert(buffer)
     /**
      * The current position
      * @private

@@ -271,6 +271,22 @@ it('Supports starting buffers in the constructor', (tape) => {
   tape.end()
 })
 
+it('Supports constructing with fixed length', (tape) => {
+  tape.plan(2)
+
+  const ba = new ByteArray(10)
+
+  tape.equal(ba.length, 10)
+
+  for (let i = 0; i < ba.length; i++) {
+    ba.writeByte(i)
+  }
+
+  tape.equal(ba.length, 10)
+
+  tape.end()
+})
+
 it('Supports a while loop using bytesAvailable', (tape) => {
   tape.plan(1)
 
