@@ -6,7 +6,7 @@
  * @param {Number} length
  * @returns {String}
  */
-exports.random_string = function random_string(length) {
+exports.random_string = (length) => {
   const set = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
   let str = ''
 
@@ -25,9 +25,7 @@ exports.random_string = function random_string(length) {
  * @param {Number} max
  * @returns {Number}
  */
-exports.random_int = function random_int(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
-}
+exports.random_int = (min, max) => ~~(Math.random() * (max - min + 1) + min)
 
 /**
  * @exports
@@ -36,7 +34,7 @@ exports.random_int = function random_int(min, max) {
  * @param {Number} value_count
  * @returns {Array}
  */
-exports.create_random_objects = function create_random_objects(object_count, value_count) {
+exports.create_random_objects = (object_count, value_count) => {
   const objects = []
 
   for (let i = 0; i < object_count; i++) {
