@@ -53,7 +53,7 @@ module.exports = class AMF3 {
     this.flags = 0
     /**
      * The reference, used to return the referenceable value
-     * @type {*}
+     * @type {String|Object}
      */
     this.reference = null
     /**
