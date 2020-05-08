@@ -119,14 +119,14 @@ module.exports = class AMF3 {
 
   /**
    * Pops a flag, used for knowing what the remaining bits are
-   * @returns {Boolean}
+   * @returns {Number}
    */
   popFlag() {
     const ref = this.flags & 1
 
     this.flags >>= 1
 
-    return Boolean(ref)
+    return ref
   }
 
   /**
