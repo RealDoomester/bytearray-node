@@ -302,11 +302,13 @@ it('Supports the AVMPLUS marker', (tape) => {
 })
 
 it('Can write/read AMF0 new constructed primitives', (tape) => {
-  tape.plan(3)
+  tape.plan(5)
 
   const arr = new Array([1, 2, 3])
   const obj = new Object({ id: 1 })
   const str = new String('Hello World.')
+  const bool = new Boolean(true)
+  const num = new Number(2)
 
   const ba = new ByteArray()
   ba.objectEncoding = ObjectEncoding.AMF0
@@ -314,12 +316,16 @@ it('Can write/read AMF0 new constructed primitives', (tape) => {
   ba.writeObject(arr)
   ba.writeObject(obj)
   ba.writeObject(str)
+  ba.writeObject(bool)
+  ba.writeObject(num)
 
   ba.position = 0
 
   tape.deepEqual(ba.readObject(), arr)
   tape.deepEqual(ba.readObject(), obj)
   tape.equal(ba.readObject(), str.toString())
+  tape.ok(ba.readObject())
+  tape.equal(ba.readObject(), 2)
 
   tape.end()
 })
