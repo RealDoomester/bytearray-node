@@ -6,12 +6,7 @@
  */
 const ByteArray = require('bytearray-node')
 const { murmurHash128 } = require('murmurhash-native')
-
-/**
- * Our enums
- * @constant
- */
-const Util = require('./util')
+const { isInt32Array, isUint32Array, isFloat64Array } = require('util').types
 const { isImplementedBy } = require('../../enums/IExternalizable')
 
 /**
@@ -143,13 +138,7 @@ module.exports = class AMF3 {
     this.reference = null
 
     if (table !== 'traitReferences') {
-      const bits = this.readUInt29()
-
-      if (Util.isUInt29(bits)) {
-        this.flags = bits
-      } else {
-        throw new RangeError(`The value: '${bits}' is out of range for uint29.`)
-      }
+      this.flags = this.readUInt29()
     }
 
     const isReference = !this.popFlag()
@@ -267,7 +256,7 @@ module.exports = class AMF3 {
     if (idx !== false) {
       this.writeUInt29(idx << 1)
     } else {
-      if (Util.isDenseArray(value)) {
+      if (Object.keys(value).length === value.length) {
         this.writeUInt29((value.length << 1) | 1)
         this.writeUInt29(1)
 
@@ -537,8 +526,10 @@ module.exports = class AMF3 {
       this.writeUInt29((value.length << 1) | 1)
       this.byteArr.writeBoolean(Object.isExtensible(value))
 
+      const writeFunc = isInt32Array(value) ? 'writeInt' : isUint32Array(value) ? 'writeUnsignedInt' : 'writeDouble'
+
       for (let i = 0; i < value.length; i++) {
-        this.byteArr[Util.getTypedWriteFunc(value.constructor)](value[i])
+        this.byteArr[writeFunc](value[i])
       }
     }
   }
@@ -555,10 +546,11 @@ module.exports = class AMF3 {
 
     const length = this.flags
     const fixed = this.byteArr.readBoolean()
-    const value = Util.getTypedConstruct(type, length)
+    const value = type === 'int' ? new Int32Array(length) : type === 'uint' ? new Uint32Array(length) : new Float64Array(length)
+    const readFunc = isInt32Array(value) ? 'readInt' : isUint32Array(value) ? 'readUnsignedInt' : 'readDouble'
 
     for (let i = 0; i < length; i++) {
-      value[i] = this.byteArr[Util.getTypedReadFunc(value.constructor)]()
+      value[i] = this.byteArr[readFunc]()
     }
 
     return fixed ? Object.preventExtensions(value) : value
@@ -579,7 +571,7 @@ module.exports = class AMF3 {
       if (type === Boolean) {
         this.byteArr.writeByte(value ? Markers.TRUE : Markers.FALSE)
       } else if (type === Number) {
-        if (Util.isUInt29(value)) {
+        if (value << 3 >> 3 === value) {
           this.byteArr.writeByte(Markers.INT)
           this.writeUInt29(value & 0x1FFFFFFF)
         } else {
@@ -600,8 +592,10 @@ module.exports = class AMF3 {
       } else if (type === Map) {
         this.byteArr.writeByte(Markers.DICTIONARY)
         this.writeDictionary(value)
-      } else if (Util.isVectorLike(type)) {
-        this.byteArr.writeByte(Markers[Util.getTypedMarkerKey(type)])
+      } else if (isInt32Array(value) || isUint32Array(value) || isFloat64Array(value)) {
+        const marker = isInt32Array(value) ? Markers.VECTOR_INT : isUint32Array(value) ? Markers.VECTOR_UINT : Markers.VECTOR_DOUBLE
+
+        this.byteArr.writeByte(marker)
         this.writeVector(value)
       } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
