@@ -593,16 +593,16 @@ module.exports = class AMF3 {
         this.byteArr.writeByte(Markers.DICTIONARY)
         this.writeDictionary(value)
       } else if (isInt32Array(value) || isUint32Array(value) || isFloat64Array(value)) {
-        const marker = isInt32Array(value) ? Markers.VECTOR_INT : isUint32Array(value) ? Markers.VECTOR_UINT : Markers.VECTOR_DOUBLE
+        const marker = isInt32Array(value) ? 'VECTOR_INT' : isUint32Array(value) ? 'VECTOR_UINT' : 'VECTOR_DOUBLE'
 
-        this.byteArr.writeByte(marker)
+        this.byteArr.writeByte(Markers[marker])
         this.writeVector(value)
       } else if (type === Object || this.byteArr.classMapping.has(type)) {
         this.byteArr.writeByte(Markers.OBJECT)
         this.writeObject(value)
       } else if (typeof value === 'object') {
         this.byteArr.writeByte(Markers.OBJECT)
-        this.writeObject(Object.assign({}, value), true)
+        this.writeObject(value, true)
       } else if (type === BigInt) {
         this.write(value.toString())
       } else {
