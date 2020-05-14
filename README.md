@@ -6,7 +6,10 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 # Installation
 
-`npm install bytearray-node`
+- [Python 3](https://www.python.org/downloads/)
+- [Windows Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) (Select `C++ Build Tools`)
+- `npm config set msvs_version 2019`
+- `npm install bytearray-node`
 
 # API (please see this)
 
