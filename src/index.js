@@ -278,6 +278,19 @@ module.exports = class ByteArray {
   }
 
   /**
+   * Simulates signed overflow
+   * @author truelossless
+   * @param {Number} value
+   * @param {Number} bits
+   * @returns {Number}
+   */
+  signedOverflow(value, bits) {
+    const sign = 1 << bits - 1
+
+    return (value & sign - 1) - (value & sign)
+  }
+
+  /**
    * Clears the buffer and sets the position to 0
    */
   clear() {
@@ -540,7 +553,7 @@ module.exports = class ByteArray {
    */
   writeByte(value) {
     this.expand(1)
-    this.buffer.writeInt8(value, this.position++)
+    this.buffer.writeInt8(this.signedOverflow(value, 8), this.position++)
   }
 
   /**
@@ -584,7 +597,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeInt(value) {
-    this.writeBufferFunc(value, 'writeInt32', 4)
+    this.writeBufferFunc(this.signedOverflow(value, 4), 'writeInt32', 4)
   }
 
   /**
@@ -629,7 +642,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeShort(value) {
-    this.writeBufferFunc(value, 'writeInt16', 2)
+    this.writeBufferFunc(this.signedOverflow(value, 16), 'writeInt16', 2)
   }
 
   /**

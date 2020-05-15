@@ -15,6 +15,22 @@ const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 const ObjectEncoding = require('../enums/ObjectEncoding')
 
+it('Can write/read signed overflow', (tape) => {
+  tape.plan(2)
+
+  const ba = new ByteArray()
+
+  ba.writeByte(128)
+  ba.writeByte(-129)
+
+  ba.position = 0
+
+  tape.equal(ba.readByte(), -128)
+  tape.equal(ba.readByte(), 127)
+
+  tape.end()
+})
+
 it('Can write/read a byte', (tape) => {
   tape.plan(2)
 
