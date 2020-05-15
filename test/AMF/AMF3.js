@@ -178,7 +178,7 @@ it('Can write/read AMF3 typed objects', (tape) => {
 
   ba.position = 0
 
-  tape.deepEqual(ba.readObject(), { name: 'Daan' })
+  tape.deepLooseEqual(ba.readObject(), { name: 'Daan' })
 
   tape.end()
 })
@@ -209,7 +209,7 @@ it('Can write/read AMF3 IExternalizable objects', (tape) => {
 
   ba.position = 0
 
-  tape.deepEqual(ba.readObject(), { name: 'Daan' })
+  tape.deepLooseEqual(ba.readObject(), { name: 'Daan' })
 
   tape.end()
 })

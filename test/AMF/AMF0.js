@@ -252,7 +252,7 @@ it('Can write/read AMF0 anonymous typed objects', (tape) => {
   const obj = ba.readObject()
 
   tape.equal(obj.constructor, Object)
-  tape.deepEqual(obj, person)
+  tape.deepLooseEqual(obj, person)
 
   tape.end()
 })
