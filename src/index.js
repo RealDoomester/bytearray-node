@@ -597,7 +597,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeInt(value) {
-    this.writeBufferFunc(this.signedOverflow(value, 4), 'writeInt32', 4)
+    this.writeBufferFunc(this.signedOverflow(value, 32), 'writeInt32', 4)
   }
 
   /**

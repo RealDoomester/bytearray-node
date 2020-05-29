@@ -16,17 +16,21 @@ const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 const ObjectEncoding = require('../enums/ObjectEncoding')
 
 it('Can write/read signed overflow', (tape) => {
-  tape.plan(2)
+  tape.plan(4)
 
   const ba = new ByteArray()
 
   ba.writeByte(128)
   ba.writeByte(-129)
+  ba.writeShort(-62768)
+  ba.writeInt(-3147483649)
 
   ba.position = 0
 
   tape.equal(ba.readByte(), -128)
   tape.equal(ba.readByte(), 127)
+  tape.equal(ba.readShort(), 2768)
+  tape.equal(ba.readInt(), 1147483647)
 
   tape.end()
 })
