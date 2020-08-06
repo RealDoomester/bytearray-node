@@ -28,7 +28,13 @@ const AMF3 = require('./AMF/AMF3')
  * @param {Buffer|Array|Number} v
  * @returns {Buffer}
  */
-const convert = (v) => Buffer.isBuffer(v) ? v : Array.isArray(v) ? Buffer.from(v) : Number.isInteger(v) ? Buffer.alloc(v) : Buffer.alloc(0)
+const convert = (v) => Buffer.isBuffer(v)
+  ? v
+  : Array.isArray(v)
+    ? Buffer.from(v)
+    : Number.isInteger(v)
+      ? Buffer.alloc(v)
+      : Buffer.alloc(0)
 
 /**
  * @exports
