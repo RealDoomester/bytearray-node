@@ -1,26 +1,6 @@
 'use strict'
 
-/**
- * The AMF0 markers
- * @constant
- */
-const Markers = {
-  NUMBER: 0x00,
-  BOOLEAN: 0x01,
-  STRING: 0x02,
-  OBJECT: 0x03,
-  NULL: 0x05,
-  UNDEFINED: 0x06,
-  REFERENCE: 0x07,
-  ECMA_ARRAY: 0x08,
-  OBJECT_END: 0x09,
-  STRICT_ARRAY: 0x0A,
-  DATE: 0x0B,
-  LONG_STRING: 0x0C,
-  SET: 0x0E,
-  TYPED_OBJECT: 0x10,
-  AVMPLUS: 0x11
-}
+const Markers = require('./Markers').AMF0
 
 /**
  * @exports

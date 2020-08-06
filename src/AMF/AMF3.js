@@ -1,35 +1,11 @@
 'use strict'
 
-/**
- * Our dependencies
- * @constant
- */
 const ByteArray = require('bytearray-node')
 const { murmurHash128 } = require('murmurhash-native')
 const { isInt32Array, isUint32Array, isFloat64Array } = require('util').types
 const { isImplementedBy } = require('../../enums/IExternalizable')
 
-/**
- * The AMF3 markers
- * @constant
- */
-const Markers = {
-  UNDEFINED: 0x00,
-  NULL: 0x01,
-  FALSE: 0x02,
-  TRUE: 0x03,
-  INT: 0x04,
-  DOUBLE: 0x05,
-  STRING: 0x06,
-  DATE: 0x08,
-  ARRAY: 0x09,
-  OBJECT: 0x0A,
-  BYTEARRAY: 0x0C,
-  DICTIONARY: 0x11,
-  VECTOR_INT: 0x0D,
-  VECTOR_UINT: 0x0E,
-  VECTOR_DOUBLE: 0x0F
-}
+const Markers = require('./Markers').AMF3
 
 /**
  * @exports
