@@ -1,30 +1,18 @@
 'use strict'
 
-/**
- * Our dependencies
- * @constant
- */
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
 const { LZMA } = require('lzma-native')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
-/**
- * Our enums
- * @constant
- */
 const Endian = require('../enums/Endian')
 const ObjectEncoding = require('../enums/ObjectEncoding')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
 
-/**
- * Our AMF dependencies
- * @constant
- */
 const AMF0 = require('./AMF/AMF0')
 const AMF3 = require('./AMF/AMF3')
 
 /**
- * Helper function that converts data types to a buffer
+ * @description Helper function that converts data types to a buffer
  * @param {Buffer|Array|Number} v
  * @returns {Buffer}
  */
@@ -42,33 +30,33 @@ const convert = (v) => Buffer.isBuffer(v)
  */
 module.exports = class ByteArray {
   /**
-   * Used to preserve class objects
    * @static
+   * @description Used to preserve class objects
    * @type {WeakMap}
    */
   static classMapping = new WeakMap()
   /**
-   * Used to preserve alias strings
    * @static
+   * @description Used to preserve alias strings
    * @type {Object}
    */
   static aliasMapping = Object.create(null)
 
   /**
-   * The current position
    * @private
+   * @description The current position
    * @type {Number}
    */
   #position
   /**
-   * The byte order
    * @private
+   * @description The byte order
    * @type {String}
    */
   #endian
   /**
-   * The AMF object encoding
    * @private
+   * @description The AMF object encoding
    * @type {Number}
    */
   #objectEncoding
@@ -79,32 +67,32 @@ module.exports = class ByteArray {
    */
   constructor(buffer) {
     /**
-     * Holds the data
+     * @description Holds the data
      * @type {Buffer}
      */
     this.buffer = convert(buffer)
     /**
-     * The current position
      * @private
+     * @description The current position
      * @type {Number}
      */
     this.#position = 0
     /**
-     * The byte order
      * @private
+     * @description The byte order
      * @type {String}
      */
     this.#endian = Endian.BIG_ENDIAN
     /**
-     * The AMF object encoding
      * @private
+     * @description The AMF object encoding
      * @type {Number}
      */
     this.#objectEncoding = ObjectEncoding.AMF3
   }
 
   /**
-   * Override for Object.prototype.toString.call
+   * @description Override for Object.prototype.toString.call
    * @returns {String}
    */
   get [Symbol.toStringTag]() {
@@ -112,7 +100,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the current position
+   * @description Returns the current position
    * @returns {Number}
    */
   get position() {
@@ -120,7 +108,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Sets the position
+   * @description Sets the position
    * @param {Number} value
    */
   set position(value) {
@@ -132,7 +120,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the byte order
+   * @description Returns the byte order
    * @returns {String}
    */
   get endian() {
@@ -140,7 +128,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Sets the byte order
+   * @description Sets the byte order
    * @param {String} value
    */
   set endian(value) {
@@ -152,7 +140,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the AMF object encoding
+   * @description Returns the AMF object encoding
    * @returns {Number}
    */
   get objectEncoding() {
@@ -160,7 +148,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Sets the AMF object encoding
+   * @description Sets the AMF object encoding
    * @param {Number} value
    */
   set objectEncoding(value) {
@@ -172,7 +160,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the length of the buffer
+   * @description Returns the length of the buffer
    * @returns {Number}
    */
   get length() {
@@ -180,7 +168,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Sets the length of the buffer
+   * @description Sets the length of the buffer
    * @param {Number} value
    */
   set length(value) {
@@ -201,7 +189,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the amount of bytes available
+   * @description Returns the amount of bytes available
    * @returns {Number}
    */
   get bytesAvailable() {
@@ -209,7 +197,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the class mapping
+   * @description Returns the class mapping
    * @returns {WeakMap}
    */
   get classMapping() {
@@ -217,7 +205,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Returns the alias mapping
+   * @description Returns the alias mapping
    * @returns {Object}
    */
   get aliasMapping() {
@@ -225,7 +213,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Preserves the class (type) of an object when the object is encoded in AMF
+   * @description Preserves the class (type) of an object when the object is encoded in AMF
    * @param {String} aliasName
    * @param {Object} classObject
    */
@@ -243,7 +231,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a buffer function
+   * @description Reads a buffer function
    * @param {String} func
    * @param {Number} pos
    * @returns {Number}
@@ -257,7 +245,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a buffer function
+   * @description Writes a buffer function
    * @param {Number} value
    * @param {String} func
    * @param {Number} pos
@@ -270,7 +258,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Expands the buffer when needed
+   * @description Expands the buffer when needed
    * @param {Number} value
    */
   expand(value) {
@@ -284,7 +272,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Simulates signed overflow
+   * @description Simulates signed overflow
    * @author truelossless
    * @param {Number} value
    * @param {Number} bits
@@ -297,7 +285,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Clears the buffer and sets the position to 0
+   * @description Clears the buffer and sets the position to 0
    */
   clear() {
     this.buffer = Buffer.alloc(0)
@@ -305,7 +293,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Compresses the buffer
+   * @description Compresses the buffer
    * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
    */
   async compress(algorithm = CompressionAlgorithm.ZLIB) {
@@ -329,7 +317,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a boolean
+   * @description Reads a boolean
    * @returns {Boolean}
    */
   readBoolean() {
@@ -337,7 +325,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a signed byte
+   * @description Reads a signed byte
    * @returns {Number}
    */
   readByte() {
@@ -345,7 +333,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads multiple signed bytes from a ByteArray
+   * @description Reads multiple signed bytes from a ByteArray
    * @param {ByteArray} bytes
    * @param {Number} [offset=0]
    * @param {Number} [length=0]
@@ -371,7 +359,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a double
+   * @description Reads a double
    * @returns {Number}
    */
   readDouble() {
@@ -379,7 +367,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a float
+   * @description Reads a float
    * @returns {Number}
    */
   readFloat() {
@@ -387,7 +375,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a signed int
+   * @description Reads a signed int
    * @returns {Number}
    */
   readInt() {
@@ -395,7 +383,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a signed long
+   * @description Reads a signed long
    * @returns {BigInt}
    */
   readLong() {
@@ -403,7 +391,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a multibyte string
+   * @description Reads a multibyte string
    * @param {Number} length
    * @param {String} [charset='utf8']
    * @returns {String}
@@ -430,8 +418,8 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads an object
-   * @returns {*}
+   * @description Reads an object
+   * @returns {any}
    */
   readObject() {
     if (this.objectEncoding === ObjectEncoding.AMF0) {
@@ -444,7 +432,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a signed short
+   * @description Reads a signed short
    * @returns {Number}
    */
   readShort() {
@@ -452,7 +440,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads an unsigned byte
+   * @description Reads an unsigned byte
    * @returns {Number}
    */
   readUnsignedByte() {
@@ -460,7 +448,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads an unsigned int
+   * @description Reads an unsigned int
    * @returns {Number}
    */
   readUnsignedInt() {
@@ -468,7 +456,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads an unsigned short
+   * @description Reads an unsigned short
    * @returns {Number}
    */
   readUnsignedShort() {
@@ -476,7 +464,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads an unsigned long
+   * @description Reads an unsigned long
    * @returns {BigInt}
    */
   readUnsignedLong() {
@@ -484,7 +472,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads a UTF-8 string
+   * @description Reads a UTF-8 string
    * @returns {String}
    */
   readUTF() {
@@ -492,7 +480,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Reads UTF-8 bytes
+   * @description Reads UTF-8 bytes
    * @param {Number} length
    * @returns {String}
    */
@@ -501,7 +489,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Converts the buffer to JSON
+   * @description Converts the buffer to JSON
    * @returns {Object}
    */
   toJSON() {
@@ -509,7 +497,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Converts the buffer to a string
+   * @description Converts the buffer to a string
    * @param {String} [charset='utf8']
    * @returns {String}
    */
@@ -522,7 +510,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Decompresses the buffer
+   * @description Decompresses the buffer
    * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
    */
   async uncompress(algorithm = CompressionAlgorithm.ZLIB) {
@@ -546,7 +534,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a boolean
+   * @description Writes a boolean
    * @param {Boolean} value
    */
   writeBoolean(value) {
@@ -554,7 +542,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a signed byte
+   * @description Writes a signed byte
    * @param {Number} value
    */
   writeByte(value) {
@@ -563,7 +551,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes multiple signed bytes to a ByteArray
+   * @description Writes multiple signed bytes to a ByteArray
    * @param {ByteArray} bytes
    * @param {Number} [offset=0]
    * @param {Number} [length=0]
@@ -583,7 +571,7 @@ module.exports = class ByteArray {
   }
 
   /**
-  * Writes a double
+  * @description Writes a double
   * @param {Number} value
   */
   writeDouble(value) {
@@ -591,7 +579,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a float
+   * @description Writes a float
    * @param {Number} value
    */
   writeFloat(value) {
@@ -599,7 +587,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a signed int
+   * @description Writes a signed int
    * @param {Number} value
    */
   writeInt(value) {
@@ -607,7 +595,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a signed long
+   * @description Writes a signed long
    * @param {BigInt} value
    */
   writeLong(value) {
@@ -615,7 +603,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a multibyte string
+   * @description Writes a multibyte string
    * @param {String} value
    * @param {String} [charset='utf8']
    */
@@ -630,8 +618,8 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes an object
-   * @param {*} value
+   * @description Writes an object
+   * @param {any} value
    */
   writeObject(value) {
     if (this.objectEncoding === ObjectEncoding.AMF0) {
@@ -644,7 +632,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a signed short
+   * @description Writes a signed short
    * @param {Number} value
    */
   writeShort(value) {
@@ -652,7 +640,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes an unsigned byte
+   * @description Writes an unsigned byte
    * @param {Number} value
    */
   writeUnsignedByte(value) {
@@ -661,7 +649,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes an unsigned int
+   * @description Writes an unsigned int
    * @param {Number} value
    */
   writeUnsignedInt(value) {
@@ -669,7 +657,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes an unsigned short
+   * @description Writes an unsigned short
    * @param {Number} value
    */
   writeUnsignedShort(value) {
@@ -677,7 +665,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes an unsigned long
+   * @description Writes an unsigned long
    * @param {BigInt} value
    */
   writeUnsignedLong(value) {
@@ -685,7 +673,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes a UTF-8 string
+   * @description Writes a UTF-8 string
    * @param {String} value
    */
   writeUTF(value) {
@@ -694,7 +682,7 @@ module.exports = class ByteArray {
   }
 
   /**
-   * Writes UTF-8 bytes
+   * @description Writes UTF-8 bytes
    * @param {String} value
    */
   writeUTFBytes(value) {

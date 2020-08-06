@@ -13,44 +13,45 @@ const Markers = require('./Markers').AMF3
  */
 module.exports = class AMF3 {
   /**
+   * @typedef {import('../')} ByteArray
    * @constructor
    * @param {ByteArray} byteArr
    */
   constructor(byteArr) {
     /**
-     * The ByteArray base
+     * @description The ByteArray base
      * @type {ByteArray}
      */
     this.byteArr = byteArr
     /**
-     * The flags, used for length
+     * @description The flags, used for length
      * @type {Number}
      */
     this.flags = 0
     /**
-     * The reference, used to return the referenceable value
+     * @description The reference, used to return the referenceable value
      * @type {String|Object}
      */
     this.reference = null
     /**
-     * The array of string references
+     * @description The array of string references
      * @type {Array}
      */
     this.stringReferences = []
     /**
-     * The array of object references
+     * @description The array of object references
      * @type {Array}
      */
     this.objectReferences = []
     /**
-     * The array of trait references
+     * @description The array of trait references
      * @type {Array}
      */
     this.traitReferences = []
   }
 
   /**
-   * Reads a variable-length unsigned 29-bit integer
+   * @description Reads a variable-length unsigned 29-bit integer
    * @returns {Number}
    */
   readUInt29() {
@@ -70,7 +71,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Writes a variable-length unsigned 29-bit integer
+   * @description Writes a variable-length unsigned 29-bit integer
    * @param {Number} value
    */
   writeUInt29(value) {
@@ -94,7 +95,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Pops a flag, used for knowing what the remaining bits are
+   * @description Pops a flag, used for knowing what the remaining bits are
    * @returns {Number}
    */
   popFlag() {
@@ -106,7 +107,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Set the current reference
+   * @description Set the current reference
    * @param {String} table
    * @returns {Boolean}
    */
@@ -127,7 +128,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Get or set a reference
+   * @description Get or set a reference
    * @param {String|Object} value
    * @param {String} table
    * @returns {Number|Boolean}
@@ -145,7 +146,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a string
+   * @description Write a string
    * @param {String} value
    * @param {Boolean} [useType=true]
    */
@@ -173,7 +174,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a string
+   * @description Read a string
    * @returns {String}
    */
   readString() {
@@ -192,7 +193,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a date
+   * @description Write a date
    * @param {Date} value
    */
   writeDate(value) {
@@ -207,7 +208,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a date
+   * @description Read a date
    * @returns {Date}
    */
   readDate() {
@@ -223,7 +224,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write an array
+   * @description Write an array
    * @param {Array} value
    */
   writeArray(value) {
@@ -253,7 +254,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read an array
+   * @description Read an array
    * @returns {Array}
    */
   readArray() {
@@ -276,7 +277,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write an object
+   * @description Write an object
    * @param {Object} value
    * @param {Boolean} [isAnonymousObject=false]
    */
@@ -324,7 +325,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write object traits
+   * @description Write object traits
    * @param {Object} value
    * @param {Boolean} isAnonymousObject
    * @returns {Object}
@@ -350,7 +351,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read an object
+   * @description Read an object
    * @returns {Object}
    */
   readObject() {
@@ -414,7 +415,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a ByteArray
+   * @description Write a ByteArray
    * @param {ByteArray} value
    */
   writeByteArray(value) {
@@ -431,7 +432,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a ByteArray
+   * @description Read a ByteArray
    * @returns {ByteArray}
    */
   readByteArray() {
@@ -448,7 +449,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a dictionary
+   * @description Write a dictionary
    * @param {Map} value
    */
   writeDictionary(value) {
@@ -468,7 +469,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a dictionary
+   * @description Read a dictionary
    * @returns {Map}
    */
   readDictionary() {
@@ -490,7 +491,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a vector
+   * @description Write a vector
    * @param {Object} value
    */
   writeVector(value) {
@@ -511,7 +512,7 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a vector
+   * @description Read a vector
    * @param {String} type
    * @returns {Object}
    */
@@ -533,8 +534,8 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Write a value
-   * @param {*} value
+   * @description Write a value
+   * @param {any} value
    */
   write(value) {
     if (value === null) {
@@ -588,8 +589,8 @@ module.exports = class AMF3 {
   }
 
   /**
-   * Read a value
-   * @returns {*}
+   * @description Read a value
+   * @returns {any}
    */
   read() {
     const marker = this.byteArr.readByte()

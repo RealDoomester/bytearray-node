@@ -8,24 +8,25 @@ const Markers = require('./Markers').AMF0
  */
 module.exports = class AMF0 {
   /**
+   * @typedef {import('../')} ByteArray
    * @constructor
    * @param {ByteArray} byteArr
    */
   constructor(byteArr) {
     /**
-     * The ByteArray base
+     * @description The ByteArray base
      * @type {ByteArray}
      */
     this.byteArr = byteArr
     /**
-     * The array of object references
+     * @description The array of object references
      * @type {Array}
      */
     this.references = []
   }
 
   /**
-   * Get or set a reference
+   * @description Get or set a reference
    * @param {Object} value
    * @returns {Number|Boolean}
    */
@@ -42,7 +43,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a reference
+   * @description Write a reference
    * @param {Number} idx
    */
   writeReference(idx) {
@@ -51,7 +52,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write the end of an object
+   * @description Write the end of an object
    */
   writeObjectEnd() {
     this.byteArr.writeShort(0)
@@ -59,7 +60,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read the end of an object
+   * @description Read the end of an object
    * @param {Object} obj
    * @returns {Object}
    */
@@ -72,7 +73,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a string
+   * @description Write a string
    * @param {String} value
    */
   writeString(value) {
@@ -88,7 +89,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write an object
+   * @description Write an object
    * @param {Object} value
    */
   writeObject(value) {
@@ -109,7 +110,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read an object
+   * @description Read an object
    * @returns {Object}
    */
   readObject() {
@@ -125,7 +126,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write an ECMA array
+   * @description Write an ECMA array
    * @param {Array} value
    */
   writeECMAArray(value) {
@@ -147,7 +148,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read an ECMA array
+   * @description Read an ECMA array
    * @returns {Array}
    */
   readECMAArray() {
@@ -168,7 +169,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read a strict array
+   * @description Read a strict array
    * @returns {Array}
    */
   readStrictArray() {
@@ -185,7 +186,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a date
+   * @description Write a date
    * @param {Date} value
    */
   writeDate(value) {
@@ -201,7 +202,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read a date
+   * @description Read a date
    * @returns {Date}
    */
   readDate() {
@@ -214,7 +215,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a set
+   * @description Write a set
    * @param {Set} value
    */
   writeSet(value) {
@@ -235,7 +236,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read a set
+   * @description Read a set
    * @returns {Set}
    */
   readSet() {
@@ -256,7 +257,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a typed object
+   * @description Write a typed object
    * @param {Object} value
    */
   writeTypedObject(value) {
@@ -278,7 +279,7 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read a typed object
+   * @description Read a typed object
    * @returns {Object}
    */
   readTypedObject() {
@@ -301,8 +302,8 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Switches to AMF3
-   * @returns {*}
+   * @description Switches to AMF3
+   * @returns {any}
    */
   readAvmPlus() {
     if (this.byteArr.bytesAvailable >= 1) {
@@ -315,8 +316,8 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Write a value
-   * @param {*} value
+   * @description Write a value
+   * @param {any} value
    */
   write(value) {
     if (value === null) {
@@ -355,8 +356,8 @@ module.exports = class AMF0 {
   }
 
   /**
-   * Read a value
-   * @returns {*}
+   * @description Read a value
+   * @returns {any}
    */
   read() {
     const marker = this.byteArr.readByte()
