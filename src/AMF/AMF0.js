@@ -55,7 +55,7 @@ module.exports = class AMF0 {
     if (idx >= 0) {
       return idx
     } else {
-      this.references.push(value)
+      this.references[this.references.length] = value
 
       return false
     }

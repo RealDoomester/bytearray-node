@@ -162,7 +162,7 @@ module.exports = class AMF3 {
     if (idx >= 0) {
       return idx
     } else {
-      this[table].push(value)
+      this[table][this[table].length] = value
 
       return false
     }
