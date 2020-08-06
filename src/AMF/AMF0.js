@@ -94,18 +94,14 @@ module.exports = class AMF0 {
   /**
    * Write a string
    * @param {String} value
-   * @param {Boolean} [useType=true]
    */
-  writeString(value, useType = true) {
+  writeString(value) {
     value = value.toString()
 
     const length = Buffer.byteLength(value)
     const isLong = length > 65535
 
-    if (useType) {
-      this.byteArr.writeByte(isLong ? Markers.LONG_STRING : Markers.STRING)
-    }
-
+    this.byteArr.writeByte(isLong ? Markers.LONG_STRING : Markers.STRING)
     isLong ? this.byteArr.writeUnsignedInt(length) : this.byteArr.writeUnsignedShort(length)
 
     this.byteArr.writeUTFBytes(value)
@@ -125,7 +121,7 @@ module.exports = class AMF0 {
     this.byteArr.writeByte(Markers.OBJECT)
 
     for (const key in value) {
-      this.writeString(key, false)
+      this.byteArr.writeUTF(key)
       this.write(value[key])
     }
 
@@ -161,7 +157,7 @@ module.exports = class AMF0 {
     this.byteArr.writeUnsignedInt(Object.keys(value).length)
 
     for (const i in value) {
-      this.writeString(String(i), false)
+      this.byteArr.writeUTF(String(i))
       this.write(value[i])
     }
 
@@ -292,7 +288,7 @@ module.exports = class AMF0 {
     this.byteArr.writeUTF(this.byteArr.classMapping.get(value.constructor))
 
     for (const key in value) {
-      this.writeString(key, false)
+      this.byteArr.writeUTF(key)
       this.write(value[key])
     }
 
