@@ -35,7 +35,7 @@
     "Flash"
   ],
   "dependencies": {
-    "iconv-lite": "^0.6.0",
+    "iconv-lite": "^0.6.2",
     "lzma-native": "^6.0.1",
     "interface": "^1.2.1",
     "murmurhash-native": "^3.5.0"
