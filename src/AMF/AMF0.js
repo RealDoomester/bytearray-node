@@ -117,7 +117,9 @@ module.exports = class AMF0 {
 
     this.references.push(obj)
 
-    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
+    for (let key = this.byteArr.readUTF(); key !== ''; key = this.byteArr.readUTF()) {
+      obj[key] = this.read()
+    }
 
     return this.readObjectEnd(obj)
   }
@@ -291,7 +293,9 @@ module.exports = class AMF0 {
 
     this.references.push(obj)
 
-    for (let key = this.byteArr.readUTF(); key !== ''; obj[key] = this.read(), key = this.byteArr.readUTF()) { }
+    for (let key = this.byteArr.readUTF(); key !== ''; key = this.byteArr.readUTF()) {
+      obj[key] = this.read()
+    }
 
     return this.readObjectEnd(obj)
   }
