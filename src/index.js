@@ -5,11 +5,7 @@ const { LZMA } = require('lzma-native')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
 const Endian = require('../enums/Endian')
-const ObjectEncoding = require('../enums/ObjectEncoding')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
-
-const AMF0 = require('./AMF/AMF0')
-const AMF3 = require('./AMF/AMF3')
 
 /**
  * @description Helper function that converts data types to a buffer
@@ -30,19 +26,6 @@ const convert = (v) => Buffer.isBuffer(v)
  */
 module.exports = class ByteArray {
   /**
-   * @static
-   * @description Used to preserve class objects
-   * @type {WeakMap}
-   */
-  static classMapping = new WeakMap()
-  /**
-   * @static
-   * @description Used to preserve alias strings
-   * @type {Object}
-   */
-  static aliasMapping = Object.create(null)
-
-  /**
    * @private
    * @description The current position
    * @type {Number}
@@ -54,12 +37,6 @@ module.exports = class ByteArray {
    * @type {String}
    */
   #endian
-  /**
-   * @private
-   * @description The AMF object encoding
-   * @type {Number}
-   */
-  #objectEncoding
 
   /**
    * @constructor
@@ -83,12 +60,6 @@ module.exports = class ByteArray {
      * @type {String}
      */
     this.#endian = Endian.BIG_ENDIAN
-    /**
-     * @private
-     * @description The AMF object encoding
-     * @type {Number}
-     */
-    this.#objectEncoding = ObjectEncoding.AMF3
   }
 
   /**
@@ -140,26 +111,6 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Returns the AMF object encoding
-   * @returns {Number}
-   */
-  get objectEncoding() {
-    return this.#objectEncoding
-  }
-
-  /**
-   * @description Sets the AMF object encoding
-   * @param {Number} value
-   */
-  set objectEncoding(value) {
-    if (Number.isInteger(value) && value === 0 || value === 3) {
-      this.#objectEncoding = value
-    } else {
-      throw new TypeError(`Invalid value for objectEncoding: '${value}'.`)
-    }
-  }
-
-  /**
    * @description Returns the length of the buffer
    * @returns {Number}
    */
@@ -183,7 +134,7 @@ module.exports = class ByteArray {
         this.buffer = this.buffer.slice(0, value)
         this.position = this.length
       } else {
-        this.expand(value)
+        this.#expand(value)
       }
     }
   }
@@ -197,46 +148,13 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Returns the class mapping
-   * @returns {WeakMap}
-   */
-  get classMapping() {
-    return ByteArray.classMapping
-  }
-
-  /**
-   * @description Returns the alias mapping
-   * @returns {Object}
-   */
-  get aliasMapping() {
-    return ByteArray.aliasMapping
-  }
-
-  /**
-   * @description Preserves the class (type) of an object when the object is encoded in AMF
-   * @param {String} aliasName
-   * @param {Object} classObject
-   */
-  static registerClassAlias(aliasName, classObject) {
-    if (!aliasName) {
-      throw new Error('Missing alias name.')
-    }
-
-    if (!classObject) {
-      throw new Error('Missing class object.')
-    }
-
-    this.classMapping.set(classObject, aliasName)
-    this.aliasMapping[aliasName] = classObject
-  }
-
-  /**
+   * @private
    * @description Reads a buffer function
    * @param {String} func
    * @param {Number} pos
    * @returns {Number}
    */
-  readBufferFunc(func, pos) {
+  #readBufferFunc(func, pos) {
     const value = this.buffer[`${func}${this.endian}`](this.position)
 
     this.position += pos
@@ -245,23 +163,25 @@ module.exports = class ByteArray {
   }
 
   /**
+   * @private
    * @description Writes a buffer function
    * @param {Number} value
    * @param {String} func
    * @param {Number} pos
    */
-  writeBufferFunc(value, func, pos) {
-    this.expand(pos)
+  #writeBufferFunc(value, func, pos) {
+    this.#expand(pos)
 
     this.buffer[`${func}${this.endian}`](value, this.position)
     this.position += pos
   }
 
   /**
+   * @private
    * @description Expands the buffer when needed
    * @param {Number} value
    */
-  expand(value) {
+  #expand(value) {
     if (this.bytesAvailable < value) {
       const old = this.buffer
       const size = old.length + (value - this.bytesAvailable)
@@ -294,7 +214,7 @@ module.exports = class ByteArray {
 
   /**
    * @description Compresses the buffer
-   * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
+   * @param {String} algorithm
    */
   async compress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
@@ -335,8 +255,8 @@ module.exports = class ByteArray {
   /**
    * @description Reads multiple signed bytes from a ByteArray
    * @param {ByteArray} bytes
-   * @param {Number} [offset=0]
-   * @param {Number} [length=0]
+   * @param {Number} offset
+   * @param {Number} length
    */
   readBytes(bytes, offset = 0, length = 0) {
     if (length === 0) {
@@ -348,7 +268,7 @@ module.exports = class ByteArray {
     }
 
     if (bytes.length < offset + length) {
-      bytes.expand(offset + length)
+      bytes.#expand(offset + length)
     }
 
     for (let i = 0; i < length; i++) {
@@ -363,7 +283,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readDouble() {
-    return this.readBufferFunc('readDouble', 8)
+    return this.#readBufferFunc('readDouble', 8)
   }
 
   /**
@@ -371,7 +291,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readFloat() {
-    return this.readBufferFunc('readFloat', 4)
+    return this.#readBufferFunc('readFloat', 4)
   }
 
   /**
@@ -379,7 +299,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readInt() {
-    return this.readBufferFunc('readInt32', 4)
+    return this.#readBufferFunc('readInt32', 4)
   }
 
   /**
@@ -387,13 +307,13 @@ module.exports = class ByteArray {
    * @returns {BigInt}
    */
   readLong() {
-    return this.readBufferFunc('readBigInt64', 8)
+    return this.#readBufferFunc('readBigInt64', 8)
   }
 
   /**
    * @description Reads a multibyte string
    * @param {Number} length
-   * @param {String} [charset='utf8']
+   * @param {String} charset
    * @returns {String}
    */
   readMultiByte(length, charset = 'utf8') {
@@ -418,25 +338,11 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Reads an object
-   * @returns {any}
-   */
-  readObject() {
-    if (this.objectEncoding === ObjectEncoding.AMF0) {
-      return new AMF0(this).read()
-    } else if (this.objectEncoding === ObjectEncoding.AMF3) {
-      return new AMF3(this).read()
-    } else {
-      throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
-    }
-  }
-
-  /**
    * @description Reads a signed short
    * @returns {Number}
    */
   readShort() {
-    return this.readBufferFunc('readInt16', 2)
+    return this.#readBufferFunc('readInt16', 2)
   }
 
   /**
@@ -452,7 +358,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedInt() {
-    return this.readBufferFunc('readUInt32', 4)
+    return this.#readBufferFunc('readUInt32', 4)
   }
 
   /**
@@ -460,7 +366,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedShort() {
-    return this.readBufferFunc('readUInt16', 2)
+    return this.#readBufferFunc('readUInt16', 2)
   }
 
   /**
@@ -468,7 +374,7 @@ module.exports = class ByteArray {
    * @returns {BigInt}
    */
   readUnsignedLong() {
-    return this.readBufferFunc('readBigUInt64', 8)
+    return this.#readBufferFunc('readBigUInt64', 8)
   }
 
   /**
@@ -498,7 +404,7 @@ module.exports = class ByteArray {
 
   /**
    * @description Converts the buffer to a string
-   * @param {String} [charset='utf8']
+   * @param {String} charset
    * @returns {String}
    */
   toString(charset = 'utf8') {
@@ -511,7 +417,7 @@ module.exports = class ByteArray {
 
   /**
    * @description Decompresses the buffer
-   * @param {String} [algorithm=CompressionAlgorithm.ZLIB]
+   * @param {String} algorithm
    */
   async uncompress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
@@ -546,22 +452,22 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeByte(value) {
-    this.expand(1)
+    this.#expand(1)
     this.buffer.writeInt8(this.signedOverflow(value, 8), this.position++)
   }
 
   /**
    * @description Writes multiple signed bytes to a ByteArray
    * @param {ByteArray} bytes
-   * @param {Number} [offset=0]
-   * @param {Number} [length=0]
+   * @param {Number} offset
+   * @param {Number} length
    */
   writeBytes(bytes, offset = 0, length = 0) {
     if (length === 0) {
       length = bytes.length - offset
     }
 
-    this.expand(length)
+    this.#expand(length)
 
     for (let i = 0; i < length; i++) {
       this.buffer[i + this.position] = bytes.buffer[i + offset]
@@ -575,7 +481,7 @@ module.exports = class ByteArray {
   * @param {Number} value
   */
   writeDouble(value) {
-    this.writeBufferFunc(value, 'writeDouble', 8)
+    this.#writeBufferFunc(value, 'writeDouble', 8)
   }
 
   /**
@@ -583,7 +489,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeFloat(value) {
-    this.writeBufferFunc(value, 'writeFloat', 4)
+    this.#writeBufferFunc(value, 'writeFloat', 4)
   }
 
   /**
@@ -591,7 +497,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeInt(value) {
-    this.writeBufferFunc(this.signedOverflow(value, 32), 'writeInt32', 4)
+    this.#writeBufferFunc(this.signedOverflow(value, 32), 'writeInt32', 4)
   }
 
   /**
@@ -599,13 +505,13 @@ module.exports = class ByteArray {
    * @param {BigInt} value
    */
   writeLong(value) {
-    this.writeBufferFunc(value, 'writeBigInt64', 8)
+    this.#writeBufferFunc(value, 'writeBigInt64', 8)
   }
 
   /**
    * @description Writes a multibyte string
    * @param {String} value
-   * @param {String} [charset='utf8']
+   * @param {String} charset
    */
   writeMultiByte(value, charset = 'utf8') {
     this.position += Buffer.byteLength(value)
@@ -618,25 +524,11 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Writes an object
-   * @param {any} value
-   */
-  writeObject(value) {
-    if (this.objectEncoding === ObjectEncoding.AMF0) {
-      new AMF0(this).write(value)
-    } else if (this.objectEncoding === ObjectEncoding.AMF3) {
-      new AMF3(this).write(value)
-    } else {
-      throw new Error(`Unknown object encoding: '${this.objectEncoding}'.`)
-    }
-  }
-
-  /**
    * @description Writes a signed short
    * @param {Number} value
    */
   writeShort(value) {
-    this.writeBufferFunc(this.signedOverflow(value, 16), 'writeInt16', 2)
+    this.#writeBufferFunc(this.signedOverflow(value, 16), 'writeInt16', 2)
   }
 
   /**
@@ -644,7 +536,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedByte(value) {
-    this.expand(1)
+    this.#expand(1)
     this.buffer.writeUInt8(value, this.position++)
   }
 
@@ -653,7 +545,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedInt(value) {
-    this.writeBufferFunc(value, 'writeUInt32', 4)
+    this.#writeBufferFunc(value, 'writeUInt32', 4)
   }
 
   /**
@@ -661,7 +553,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedShort(value) {
-    this.writeBufferFunc(value, 'writeUInt16', 2)
+    this.#writeBufferFunc(value, 'writeUInt16', 2)
   }
 
   /**
@@ -669,7 +561,7 @@ module.exports = class ByteArray {
    * @param {BigInt} value
    */
   writeUnsignedLong(value) {
-    this.writeBufferFunc(value, 'writeBigUInt64', 8)
+    this.#writeBufferFunc(value, 'writeBigUInt64', 8)
   }
 
   /**

@@ -1,19 +1,10 @@
 'use strict'
 
-/**
- * Our dependencies
- * @constant
- */
 const it = require('tape')
 const ByteArray = require('../src/')
 
-/**
- * Our enums
- * @constant
- */
 const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
-const ObjectEncoding = require('../enums/ObjectEncoding')
 
 it('Can write/read signed overflow', (tape) => {
   tape.plan(4)
@@ -192,23 +183,16 @@ it('Can write/read a string', (tape) => {
 })
 
 it('Can write/read altcodes', (tape) => {
-  tape.plan(3)
+  tape.plan(1)
 
   const ba = new ByteArray()
   const str = 'ßÞÐØ×Ã'
 
   ba.writeUTF(str)
-  ba.writeObject(str)
-  ba.objectEncoding = ObjectEncoding.AMF0
-  ba.writeObject(str)
 
   ba.position = 0
 
   tape.equal(ba.readUTF(), str)
-  ba.objectEncoding = ObjectEncoding.AMF3
-  tape.equal(ba.readObject(), str)
-  ba.objectEncoding = ObjectEncoding.AMF0
-  tape.equal(ba.readObject(), str)
 
   tape.end()
 })
