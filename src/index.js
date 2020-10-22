@@ -338,6 +338,13 @@ module.exports = class ByteArray {
   }
 
   /**
+   * @description Error placement for AMF
+   */
+  readObject() {
+    throw new Error('Looking for AMF? See https://github.com/Zaseth/AMF0-TS or https://github.com/Zaseth/AMF3-TS.')
+  }
+
+  /**
    * @description Reads a signed short
    * @returns {Number}
    */
@@ -521,6 +528,13 @@ module.exports = class ByteArray {
     } else {
       throw new Error(`Invalid character set: '${charset}'.`)
     }
+  }
+
+  /**
+   * @description Error placement for AMF
+   */
+  writeObject() {
+    throw new Error('Looking for AMF? See https://github.com/Zaseth/AMF0-TS or https://github.com/Zaseth/AMF3-TS.')
   }
 
   /**
