@@ -77,6 +77,17 @@ module.exports = class ByteArray {
   }
 
   /**
+   * @static
+   * @description Registers a class alias
+   * @param {String} aliasName
+   * @param {ObjectEncoding} classObject
+   */
+  static registerClassAlias(aliasName, classObject) {
+    AMF0.registerClassAlias(aliasName, classObject)
+    AMF3.registerClassAlias(aliasName, classObject)
+  }
+
+  /**
    * @description Override for Object.prototype.toString.call
    * @returns {String}
    */
