@@ -96,7 +96,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   set position(value) {
-    if (Number.isInteger(value) && value >= 0) {
+    if (value >= 0) {
       this.#position = value
     } else {
       throw new TypeError(`Invalid value for position: '${value}'.`)
