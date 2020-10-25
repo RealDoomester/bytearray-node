@@ -6,6 +6,7 @@ const { encodingExists, decode, encode } = require('iconv-lite')
 
 const Endian = require('../enums/Endian')
 const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
+const ObjectEncoding = require('../enums/ObjectEncoding')
 
 /**
  * @description Helper function that converts data types to a buffer
@@ -37,6 +38,12 @@ module.exports = class ByteArray {
    * @type {String}
    */
   #endian
+  /**
+   * @private
+   * @description The object encoding
+   * @type {Number}
+   */
+  #objectEncoding
 
   /**
    * @constructor
@@ -60,6 +67,12 @@ module.exports = class ByteArray {
      * @type {String}
      */
     this.#endian = Endian.BIG_ENDIAN
+    /**
+     * @private
+     * @description The object encoding
+     * @type {Number}
+     */
+    this.#objectEncoding = ObjectEncoding.AMF3
   }
 
   /**
@@ -107,6 +120,26 @@ module.exports = class ByteArray {
       this.#endian = value
     } else {
       throw new TypeError(`Invalid value for endian: '${value}'.`)
+    }
+  }
+
+  /**
+   * @description Returns the object encoding
+   * @returns {Number}
+   */
+  get objectEncoding() {
+    return this.#objectEncoding
+  }
+
+  /**
+   * @description Sets the object encoding
+   * @param {Number} encoding
+   */
+  set objectEncoding(encoding) {
+    if (encoding === ObjectEncoding.AMF0 || encoding === ObjectEncoding.AMF3) {
+      this.#objectEncoding = encoding
+    } else {
+      throw new Error(`Unknown object encoding: '${encoding}'.`)
     }
   }
 
