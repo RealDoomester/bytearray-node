@@ -132,7 +132,7 @@ module.exports = class ByteArray {
     } else if (value !== this.length) {
       if (value < this.length) {
         this.buffer = this.buffer.slice(0, value)
-        this.position = this.length
+        this.#position = this.length
       } else {
         this.#expand(value)
       }
@@ -144,7 +144,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   get bytesAvailable() {
-    return this.length - this.position
+    return this.length - this.#position
   }
 
   /**
@@ -155,9 +155,9 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   #readBufferFunc(func, pos) {
-    const value = this.buffer[`${func}${this.endian}`](this.position)
+    const value = this.buffer[`${func}${this.#endian}`](this.#position)
 
-    this.position += pos
+    this.#position += pos
 
     return value
   }
@@ -172,8 +172,8 @@ module.exports = class ByteArray {
   #writeBufferFunc(value, func, pos) {
     this.#expand(pos)
 
-    this.buffer[`${func}${this.endian}`](value, this.position)
-    this.position += pos
+    this.buffer[`${func}${this.#endian}`](value, this.#position)
+    this.#position += pos
   }
 
   /**
@@ -209,7 +209,7 @@ module.exports = class ByteArray {
    */
   clear() {
     this.buffer = Buffer.alloc(0)
-    this.position = 0
+    this.#position = 0
   }
 
   /**
@@ -233,7 +233,7 @@ module.exports = class ByteArray {
       throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
     }
 
-    this.position = this.length
+    this.#position = this.length
   }
 
   /**
@@ -249,7 +249,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readByte() {
-    return this.buffer.readInt8(this.position++)
+    return this.buffer.readInt8(this.#position++)
   }
 
   /**
@@ -272,10 +272,10 @@ module.exports = class ByteArray {
     }
 
     for (let i = 0; i < length; i++) {
-      bytes.buffer[i + offset] = this.buffer[i + this.position]
+      bytes.buffer[i + offset] = this.buffer[i + this.#position]
     }
 
-    this.position += length
+    this.#position += length
   }
 
   /**
@@ -317,11 +317,11 @@ module.exports = class ByteArray {
    * @returns {String}
    */
   readMultiByte(length, charset = 'utf8') {
-    const position = this.position
-    this.position += length
+    const position = this.#position
+    this.#position += length
 
     if (encodingExists(charset)) {
-      const b = this.buffer.slice(position, this.position)
+      const b = this.buffer.slice(position, this.#position)
       const stripBOM = (charset === 'utf8' || charset === 'utf-8') && b.length >= 3 && b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF
       const value = decode(b, charset, { stripBOM })
 
@@ -357,7 +357,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedByte() {
-    return this.buffer.readUInt8(this.position++)
+    return this.buffer.readUInt8(this.#position++)
   }
 
   /**
@@ -443,7 +443,7 @@ module.exports = class ByteArray {
       throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)
     }
 
-    this.position = 0
+    this.#position = 0
   }
 
   /**
@@ -460,7 +460,7 @@ module.exports = class ByteArray {
    */
   writeByte(value) {
     this.#expand(1)
-    this.buffer.writeInt8(this.signedOverflow(value, 8), this.position++)
+    this.buffer.writeInt8(this.signedOverflow(value, 8), this.#position++)
   }
 
   /**
@@ -477,10 +477,10 @@ module.exports = class ByteArray {
     this.#expand(length)
 
     for (let i = 0; i < length; i++) {
-      this.buffer[i + this.position] = bytes.buffer[i + offset]
+      this.buffer[i + this.#position] = bytes.buffer[i + offset]
     }
 
-    this.position += length
+    this.#position += length
   }
 
   /**
@@ -521,7 +521,7 @@ module.exports = class ByteArray {
    * @param {String} charset
    */
   writeMultiByte(value, charset = 'utf8') {
-    this.position += Buffer.byteLength(value)
+    this.#position += Buffer.byteLength(value)
 
     if (encodingExists(charset)) {
       this.buffer = Buffer.concat([this.buffer, encode(value, charset)])
@@ -551,7 +551,7 @@ module.exports = class ByteArray {
    */
   writeUnsignedByte(value) {
     this.#expand(1)
-    this.buffer.writeUInt8(value, this.position++)
+    this.buffer.writeUInt8(value, this.#position++)
   }
 
   /**
