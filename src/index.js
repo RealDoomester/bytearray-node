@@ -4,9 +4,10 @@ const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zl
 const { LZMA } = require('lzma-native')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
-const Endian = require('../enums/Endian')
-const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
-const ObjectEncoding = require('../enums/ObjectEncoding')
+const { CompressionAlgorithm, Endian, ObjectEncoding } = require('../enums/')
+
+const { AMF0 } = require('amf0-ts')
+const { AMF3 } = require('amf3-ts')
 
 /**
  * @description Helper function that converts data types to a buffer
@@ -371,10 +372,17 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Error placement for AMF
+   * @description Reads an object
+   * @returns {Object}
    */
   readObject() {
-    throw new Error('Looking for AMF? See https://github.com/Zaseth/AMF0-TS or https://github.com/Zaseth/AMF3-TS.')
+    const [position, value] = this.#objectEncoding === ObjectEncoding.AMF0
+      ? AMF0.parse(this.buffer, this.#position)
+      : AMF3.parse(this.buffer, this.#position)
+
+    this.#position += position
+
+    return value
   }
 
   /**
@@ -564,10 +572,16 @@ module.exports = class ByteArray {
   }
 
   /**
-   * @description Error placement for AMF
+   * @description Writes an object
+   * @param {Object} value
    */
-  writeObject() {
-    throw new Error('Looking for AMF? See https://github.com/Zaseth/AMF0-TS or https://github.com/Zaseth/AMF3-TS.')
+  writeObject(value) {
+    const bytes = this.#objectEncoding === ObjectEncoding.AMF0
+      ? AMF0.stringify(value)
+      : AMF3.stringify(value)
+
+    this.#position += bytes.length
+    this.buffer = Buffer.concat([this.buffer, Buffer.from(bytes)])
   }
 
   /**

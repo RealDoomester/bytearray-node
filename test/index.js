@@ -3,8 +3,7 @@
 const it = require('tape')
 const ByteArray = require('../src/')
 
-const Endian = require('../enums/Endian')
-const CompressionAlgorithm = require('../enums/CompressionAlgorithm')
+const { Endian, CompressionAlgorithm } = require('../enums/')
 
 it('Can write/read signed overflow', (tape) => {
   tape.plan(4)
