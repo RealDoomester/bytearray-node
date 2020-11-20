@@ -1,10 +1,10 @@
 {
   "name": "bytearray-node",
-  "version": "3.3.4",
+  "version": "3.3.5",
   "description": "A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.",
   "main": "./src/",
   "engines": {
-    "node": ">=12.19.0"
+    "node": ">=14.15.0"
   },
   "scripts": {
     "test": "node ./test/"

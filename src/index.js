@@ -79,12 +79,18 @@ module.exports = class ByteArray {
   /**
    * @static
    * @description Registers a class alias
+   * @param {Number} encoding
    * @param {String} aliasName
    * @param {ObjectEncoding} classObject
    */
-  static registerClassAlias(aliasName, classObject) {
-    AMF0.registerClassAlias(aliasName, classObject)
-    AMF3.registerClassAlias(aliasName, classObject)
+  static registerClassAlias(encoding, aliasName, classObject) {
+    if (encoding === ObjectEncoding.AMF0) {
+      AMF0.registerClassAlias(aliasName, classObject)
+    } else if (encoding === ObjectEncoding.AMF3) {
+      AMF3.registerClassAlias(aliasName, classObject)
+    } else {
+      throw new Error(`Unknown object encoding: '${encoding}'.`)
+    }
   }
 
   /**

@@ -6,8 +6,7 @@ A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
 # Installation
 
-- Tools for Native Modules installed in Node.js setup
-- `npm install bytearray-node`
+`npm install bytearray-node`
 
 # API
 
@@ -43,12 +42,13 @@ class Character {
   }
 }
 
-ByteArray.registerClassAlias('src.Person', Person)
-ByteArray.registerClassAlias('src.Character', Character)
+ByteArray.registerClassAlias(ObjectEncoding.AMF3, 'src.Person', Person)
+ByteArray.registerClassAlias(ObjectEncoding.AMF3, 'src.Character', Character)
 
 const ba = new ByteArray()
 
 ba.objectEncoding = ObjectEncoding.AMF3
+ba.endian = Endian.BIG_ENDIAN
 
 ba.writeByte(100)
 ba.writeObject(new Person('Zaseth', 18))
