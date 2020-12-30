@@ -1,7 +1,6 @@
 'use strict'
 
 const { deflateSync, deflateRawSync, inflateSync, inflateRawSync } = require('zlib')
-const { LZMA } = require('lzma-native')
 const { encodingExists, decode, encode } = require('iconv-lite')
 
 const { CompressionAlgorithm, Endian, ObjectEncoding } = require('../enums/')
@@ -32,19 +31,19 @@ module.exports = class ByteArray {
    * @description The current position
    * @type {Number}
    */
-  #position
+  hashposition
   /**
    * @private
    * @description The byte order
    * @type {String}
    */
-  #endian
+  hashendian
   /**
    * @private
    * @description The object encoding
    * @type {Number}
    */
-  #objectEncoding
+  hashobjectEncoding
 
   /**
    * @constructor
@@ -61,19 +60,19 @@ module.exports = class ByteArray {
      * @description The current position
      * @type {Number}
      */
-    this.#position = 0
+    this.hashposition = 0
     /**
      * @private
      * @description The byte order
      * @type {String}
      */
-    this.#endian = Endian.BIG_ENDIAN
+    this.hashendian = Endian.BIG_ENDIAN
     /**
      * @private
      * @description The object encoding
      * @type {Number}
      */
-    this.#objectEncoding = ObjectEncoding.AMF3
+    this.hashobjectEncoding = ObjectEncoding.AMF3
   }
 
   /**
@@ -106,7 +105,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   get position() {
-    return this.#position
+    return this.hashposition
   }
 
   /**
@@ -115,7 +114,7 @@ module.exports = class ByteArray {
    */
   set position(value) {
     if (value >= 0) {
-      this.#position = value
+      this.hashposition = value
     } else {
       throw new TypeError(`Invalid value for position: '${value}'.`)
     }
@@ -126,7 +125,7 @@ module.exports = class ByteArray {
    * @returns {String}
    */
   get endian() {
-    return this.#endian
+    return this.hashendian
   }
 
   /**
@@ -135,7 +134,7 @@ module.exports = class ByteArray {
    */
   set endian(value) {
     if (value === 'LE' || value === 'BE') {
-      this.#endian = value
+      this.hashendian = value
     } else {
       throw new TypeError(`Invalid value for endian: '${value}'.`)
     }
@@ -146,7 +145,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   get objectEncoding() {
-    return this.#objectEncoding
+    return this.hashobjectEncoding
   }
 
   /**
@@ -155,7 +154,7 @@ module.exports = class ByteArray {
    */
   set objectEncoding(encoding) {
     if (encoding === ObjectEncoding.AMF0 || encoding === ObjectEncoding.AMF3) {
-      this.#objectEncoding = encoding
+      this.hashobjectEncoding = encoding
     } else {
       throw new Error(`Unknown object encoding: '${encoding}'.`)
     }
@@ -183,9 +182,9 @@ module.exports = class ByteArray {
     } else if (value !== this.length) {
       if (value < this.length) {
         this.buffer = this.buffer.slice(0, value)
-        this.#position = this.length
+        this.hashposition = this.length
       } else {
-        this.#expand(value)
+        this.hashexpand(value)
       }
     }
   }
@@ -195,7 +194,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   get bytesAvailable() {
-    return this.length - this.#position
+    return this.length - this.hashposition
   }
 
   /**
@@ -205,10 +204,10 @@ module.exports = class ByteArray {
    * @param {Number} pos
    * @returns {Number}
    */
-  #readBufferFunc(func, pos) {
-    const value = this.buffer[`${func}${this.#endian}`](this.#position)
+  hashreadBufferFunc(func, pos) {
+    const value = this.buffer[`${func}${this.hashendian}`](this.hashposition)
 
-    this.#position += pos
+    this.hashposition += pos
 
     return value
   }
@@ -220,11 +219,11 @@ module.exports = class ByteArray {
    * @param {String} func
    * @param {Number} pos
    */
-  #writeBufferFunc(value, func, pos) {
-    this.#expand(pos)
+  hashwriteBufferFunc(value, func, pos) {
+    this.hashexpand(pos)
 
-    this.buffer[`${func}${this.#endian}`](value, this.#position)
-    this.#position += pos
+    this.buffer[`${func}${this.hashendian}`](value, this.hashposition)
+    this.hashposition += pos
   }
 
   /**
@@ -232,7 +231,7 @@ module.exports = class ByteArray {
    * @description Expands the buffer when needed
    * @param {Number} value
    */
-  #expand(value) {
+  hashexpand(value) {
     if (this.bytesAvailable < value) {
       const old = this.buffer
       const size = old.length + (value - this.bytesAvailable)
@@ -260,13 +259,13 @@ module.exports = class ByteArray {
    */
   clear() {
     this.buffer = Buffer.alloc(0)
-    this.#position = 0
+    this.hashposition = 0
   }
 
   /**
    * @description Compresses the buffer
    * @param {String} algorithm
-   */
+   *//*
   async compress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
       return
@@ -284,7 +283,7 @@ module.exports = class ByteArray {
       throw new Error(`Invalid compression algorithm: '${algorithm}'.`)
     }
 
-    this.#position = this.length
+    this.hashposition = this.length
   }
 
   /**
@@ -300,7 +299,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readByte() {
-    return this.buffer.readInt8(this.#position++)
+    return this.buffer.readInt8(this.hashposition++)
   }
 
   /**
@@ -319,14 +318,14 @@ module.exports = class ByteArray {
     }
 
     if (bytes.length < offset + length) {
-      bytes.#expand(offset + length)
+      bytes.hashexpand(offset + length)
     }
 
     for (let i = 0; i < length; i++) {
-      bytes.buffer[i + offset] = this.buffer[i + this.#position]
+      bytes.buffer[i + offset] = this.buffer[i + this.hashposition]
     }
 
-    this.#position += length
+    this.hashposition += length
   }
 
   /**
@@ -334,7 +333,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readDouble() {
-    return this.#readBufferFunc('readDouble', 8)
+    return this.hashreadBufferFunc('readDouble', 8)
   }
 
   /**
@@ -342,7 +341,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readFloat() {
-    return this.#readBufferFunc('readFloat', 4)
+    return this.hashreadBufferFunc('readFloat', 4)
   }
 
   /**
@@ -350,7 +349,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readInt() {
-    return this.#readBufferFunc('readInt32', 4)
+    return this.hashreadBufferFunc('readInt32', 4)
   }
 
   /**
@@ -358,7 +357,7 @@ module.exports = class ByteArray {
    * @returns {BigInt}
    */
   readLong() {
-    return this.#readBufferFunc('readBigInt64', 8)
+    return this.hashreadBufferFunc('readBigInt64', 8)
   }
 
   /**
@@ -368,11 +367,11 @@ module.exports = class ByteArray {
    * @returns {String}
    */
   readMultiByte(length, charset = 'utf8') {
-    const position = this.#position
-    this.#position += length
+    const position = this.hashposition
+    this.hashposition += length
 
     if (encodingExists(charset)) {
-      const b = this.buffer.slice(position, this.#position)
+      const b = this.buffer.slice(position, this.hashposition)
       const stripBOM = (charset === 'utf8' || charset === 'utf-8') && b.length >= 3 && b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF
       const value = decode(b, charset, { stripBOM })
 
@@ -393,11 +392,11 @@ module.exports = class ByteArray {
    * @returns {Object}
    */
   readObject() {
-    const [position, value] = this.#objectEncoding === ObjectEncoding.AMF0
-      ? AMF0.parse(this.buffer, this.#position)
-      : AMF3.parse(this.buffer, this.#position)
+    const [position, value] = this.hashobjectEncoding === ObjectEncoding.AMF0
+      ? AMF0.parse(this.buffer, this.hashposition)
+      : AMF3.parse(this.buffer, this.hashposition)
 
-    this.#position += position
+    this.hashposition += position
 
     return value
   }
@@ -407,7 +406,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readShort() {
-    return this.#readBufferFunc('readInt16', 2)
+    return this.hashreadBufferFunc('readInt16', 2)
   }
 
   /**
@@ -415,7 +414,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedByte() {
-    return this.buffer.readUInt8(this.#position++)
+    return this.buffer.readUInt8(this.hashposition++)
   }
 
   /**
@@ -423,7 +422,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedInt() {
-    return this.#readBufferFunc('readUInt32', 4)
+    return this.hashreadBufferFunc('readUInt32', 4)
   }
 
   /**
@@ -431,7 +430,7 @@ module.exports = class ByteArray {
    * @returns {Number}
    */
   readUnsignedShort() {
-    return this.#readBufferFunc('readUInt16', 2)
+    return this.hashreadBufferFunc('readUInt16', 2)
   }
 
   /**
@@ -439,7 +438,7 @@ module.exports = class ByteArray {
    * @returns {BigInt}
    */
   readUnsignedLong() {
-    return this.#readBufferFunc('readBigUInt64', 8)
+    return this.hashreadBufferFunc('readBigUInt64', 8)
   }
 
   /**
@@ -483,7 +482,7 @@ module.exports = class ByteArray {
   /**
    * @description Decompresses the buffer
    * @param {String} algorithm
-   */
+   *//*
   async uncompress(algorithm = CompressionAlgorithm.ZLIB) {
     if (this.length === 0) {
       return
@@ -501,7 +500,7 @@ module.exports = class ByteArray {
       throw new Error(`Invalid decompression algorithm: '${algorithm}'.`)
     }
 
-    this.#position = 0
+    this.hashposition = 0
   }
 
   /**
@@ -517,8 +516,8 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeByte(value) {
-    this.#expand(1)
-    this.buffer.writeInt8(this.signedOverflow(value, 8), this.#position++)
+    this.hashexpand(1)
+    this.buffer.writeInt8(this.signedOverflow(value, 8), this.hashposition++)
   }
 
   /**
@@ -532,13 +531,13 @@ module.exports = class ByteArray {
       length = bytes.length - offset
     }
 
-    this.#expand(length)
+    this.hashexpand(length)
 
     for (let i = 0; i < length; i++) {
-      this.buffer[i + this.#position] = bytes.buffer[i + offset]
+      this.buffer[i + this.hashposition] = bytes.buffer[i + offset]
     }
 
-    this.#position += length
+    this.hashposition += length
   }
 
   /**
@@ -546,7 +545,7 @@ module.exports = class ByteArray {
   * @param {Number} value
   */
   writeDouble(value) {
-    this.#writeBufferFunc(value, 'writeDouble', 8)
+    this.hashwriteBufferFunc(value, 'writeDouble', 8)
   }
 
   /**
@@ -554,7 +553,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeFloat(value) {
-    this.#writeBufferFunc(value, 'writeFloat', 4)
+    this.hashwriteBufferFunc(value, 'writeFloat', 4)
   }
 
   /**
@@ -562,7 +561,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeInt(value) {
-    this.#writeBufferFunc(this.signedOverflow(value, 32), 'writeInt32', 4)
+    this.hashwriteBufferFunc(this.signedOverflow(value, 32), 'writeInt32', 4)
   }
 
   /**
@@ -570,7 +569,7 @@ module.exports = class ByteArray {
    * @param {BigInt} value
    */
   writeLong(value) {
-    this.#writeBufferFunc(value, 'writeBigInt64', 8)
+    this.hashwriteBufferFunc(value, 'writeBigInt64', 8)
   }
 
   /**
@@ -579,7 +578,7 @@ module.exports = class ByteArray {
    * @param {String} charset
    */
   writeMultiByte(value, charset = 'utf8') {
-    this.#position += Buffer.byteLength(value)
+    this.hashposition += Buffer.byteLength(value)
 
     if (encodingExists(charset)) {
       this.buffer = Buffer.concat([this.buffer, encode(value, charset)])
@@ -593,11 +592,11 @@ module.exports = class ByteArray {
    * @param {Object} value
    */
   writeObject(value) {
-    const bytes = this.#objectEncoding === ObjectEncoding.AMF0
+    const bytes = this.hashobjectEncoding === ObjectEncoding.AMF0
       ? AMF0.stringify(value)
       : AMF3.stringify(value)
 
-    this.#position += bytes.length
+    this.hashposition += bytes.length
     this.buffer = Buffer.concat([this.buffer, Buffer.from(bytes)])
   }
 
@@ -606,7 +605,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeShort(value) {
-    this.#writeBufferFunc(this.signedOverflow(value, 16), 'writeInt16', 2)
+    this.hashwriteBufferFunc(this.signedOverflow(value, 16), 'writeInt16', 2)
   }
 
   /**
@@ -614,8 +613,8 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedByte(value) {
-    this.#expand(1)
-    this.buffer.writeUInt8(value, this.#position++)
+    this.hashexpand(1)
+    this.buffer.writeUInt8(value, this.hashposition++)
   }
 
   /**
@@ -623,7 +622,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedInt(value) {
-    this.#writeBufferFunc(value, 'writeUInt32', 4)
+    this.hashwriteBufferFunc(value, 'writeUInt32', 4)
   }
 
   /**
@@ -631,7 +630,7 @@ module.exports = class ByteArray {
    * @param {Number} value
    */
   writeUnsignedShort(value) {
-    this.#writeBufferFunc(value, 'writeUInt16', 2)
+    this.hashwriteBufferFunc(value, 'writeUInt16', 2)
   }
 
   /**
@@ -639,7 +638,7 @@ module.exports = class ByteArray {
    * @param {BigInt} value
    */
   writeUnsignedLong(value) {
-    this.#writeBufferFunc(value, 'writeBigUInt64', 8)
+    this.hashwriteBufferFunc(value, 'writeBigUInt64', 8)
   }
 
   /**
