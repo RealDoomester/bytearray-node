@@ -4,9 +4,17 @@
 
 A Node.js implementation of the Actionscript 3 ByteArray supporting AMF0/AMF3.
 
+# NOTE
+
+This is a fork of the original repo, I forked it just for the sake of removing compress and decompress as they used LZMA-native since I was lazy enough to do something about that as they would mess up Heroku, on top of this I have also changed some of the variable names so they are more friendly. Thanks mickys for making this package.
+
 # Installation
 
+Original:
 `npm install bytearray-node`
+
+This fork:
+`npm install github:RealDoomester/bytearray-node`
 
 # API
 
